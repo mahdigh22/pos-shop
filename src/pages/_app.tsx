@@ -60,7 +60,7 @@ export default function App({ Component, pageProps }: AppProps) {
     const backupInterval = 24 * 60 * 60 * 1000;
     const backupTimer = setInterval(makeBackup, backupInterval);
 
-    // Initial backup when the app starts
+    // Initial backup when the app  starts
     makeBackup();
 
     // Clear the interval on component unmount to avoid memory leaks
