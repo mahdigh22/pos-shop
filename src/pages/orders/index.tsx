@@ -1,4 +1,3 @@
-
 import {
   Alert,
   alpha,
@@ -243,13 +242,7 @@ export default function Orders() {
       });
   };
   return (
-    <SnackbarProvider
-      maxSnack={3}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-    >
+    <>
       <Grid container spacing={1} sx={{ p: 1 }}>
         <Grid item xs={12}>
           <Typography variant="h4">Orders</Typography>
@@ -631,7 +624,7 @@ export default function Orders() {
           </TabPanel>{" "}
         </Grid>
       </Grid>
-    </SnackbarProvider>
+    </>
   );
 }
 function Row(props: { row: any; getorders: any }) {

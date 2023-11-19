@@ -1,4 +1,3 @@
-
 import {
   alpha,
   Box,
@@ -66,7 +65,7 @@ export default function Items(props: any) {
 
   return (
     <>
-      <Grid container sx={{ minHeight: "90vh" }} justifyContent="center">
+      <Grid container  justifyContent="center">
         <Grid item xs={12}>
           <Card sx={{ height: "100%", boxShadow: 0 }}>
             {loading ? (
@@ -225,12 +224,13 @@ export default function Items(props: any) {
                         }}
                         onClick={() => {
                           {
-                            sell &&
+                            if (sell) {
                               setProducts2((oldArray: any) => [
                                 ...oldArray,
                                 { ...row },
                               ]);
-                            setOpenSearchModal(false);
+                              setOpenSearchModal(false);
+                            }
                           }
                         }}
                       >

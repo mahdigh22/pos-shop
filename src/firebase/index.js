@@ -13,13 +13,10 @@ const firebaseConfig = {
   storageBucket: "car-shop-cb0a5.appspot.com",
   messagingSenderId: "281706051090",
   appId: "1:281706051090:web:a050a5f6875a73d295cacb",
-  measurementId: "G-33KGKP5RVT"
+  measurementId: "G-33KGKP5RVT",
 };
 
 // Initialize Firebase
-const firebaseconf= initializeApp(firebaseConfig);
-
-
-
+const firebaseconf = initializeApp(firebaseConfig, "firebaseconf");
 
 export default firebaseconf;

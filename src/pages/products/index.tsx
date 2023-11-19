@@ -84,9 +84,8 @@ export default function NewItem(props: any) {
 
       const data2 = Object?.keys(storedValue)
         ?.map((item: any) => storedValue[item])
-        ?.filter((item: any) => item.email == email)
-        ?.map((item: any, index: any) => item.list[index].code);
-
+        ?.filter((item: any) => item?.email == email)
+        ?.map((item: any, index: any) => item?.list[index]?.code);
       if (data2.includes(code)) {
         enqueueSnackbar("This product is found in return page", {
           variant: "error",
@@ -115,6 +114,7 @@ export default function NewItem(props: any) {
       enqueueSnackbar("Error deleting item", {
         variant: "error",
       });
+      console.log(error);
       setLoading(false);
     }
   }
@@ -185,13 +185,7 @@ export default function NewItem(props: any) {
   }, []);
 
   return (
-    <SnackbarProvider
-      maxSnack={3}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-    >
+    <>
       <Modal
         open={OpenNew}
         onClose={handleClose}
@@ -268,9 +262,10 @@ export default function NewItem(props: any) {
             DeleteItem={DeleteItem}
             loading={loading}
             setEdit={setEdit}
+            setOpenSearchModal={false}
           />
         </Grid>
       </Grid>
-    </SnackbarProvider>
+    </>
   );
 }

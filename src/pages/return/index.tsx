@@ -1,4 +1,3 @@
-
 import {
   Alert,
   Box,
@@ -217,13 +216,7 @@ export default function Return() {
   //   }
   // }, []);
   return (
-    <SnackbarProvider
-      maxSnack={3}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-    >
+    <>
       <Grid container spacing={1} sx={{ p: 1 }}>
         <Grid item xs={12}>
           <Typography variant="h4">Reports</Typography>
@@ -267,6 +260,6 @@ export default function Return() {
           </Grid>
         )}
       </Grid>
-    </SnackbarProvider>
+    </>
   );
 }
