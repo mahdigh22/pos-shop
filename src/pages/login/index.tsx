@@ -1,3 +1,4 @@
+import { useAuth } from "@/hooks/useAuth";
 import {
   Grid,
   Card,
@@ -14,6 +15,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Login() {
+  const { setUser,setToken } = useAuth();
+
   const [showPassword, setShowPassword] = useState(false);
   const [Loading, setLoading] = useState(false);
   const theme = useTheme();
@@ -50,6 +53,8 @@ export default function Login() {
           })
           .then(function (response: any) {
             if (response) {
+              setUser(Email == "222" || Email == "111" ? "" : Email);
+              setToken(response.config.params.token)
               localStorage.setItem(
                 "token",
                 JSON.stringify(response.config.params.token)

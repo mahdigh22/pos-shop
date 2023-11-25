@@ -8,6 +8,7 @@ import firebaseconfbackup from "@/firebase-backup";
 import { getDatabase, onValue, ref, set } from "firebase/database";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
+import { AuthProvider } from "@/hooks/useAuth";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -74,15 +75,17 @@ export default function App({ Component, pageProps }: AppProps) {
           : ""
       }
     >
-      <SnackbarProvider
-        maxSnack={3}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <Component {...pageProps} />
-      </SnackbarProvider>
+      <AuthProvider>
+        <SnackbarProvider
+          maxSnack={3}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <Component {...pageProps} />
+        </SnackbarProvider>
+      </AuthProvider>
     </Layout>
   );
 }

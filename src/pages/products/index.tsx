@@ -17,6 +17,7 @@ import firebaseconf from "@/firebase";
 import { useSnackbar, SnackbarProvider } from "notistack";
 import NewProductForm from "@/components/new-product-form";
 import Items from "@/components/items";
+import { useAuth } from "@/hooks/useAuth";
 
 const style = {
   position: "absolute" as "absolute",
@@ -31,6 +32,7 @@ const style = {
 };
 export default function NewItem(props: any) {
   const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuth();
 
   const [OpenNew, setOpenNew] = useState<boolean>(false);
   const [page, setPage] = React.useState(0);
@@ -48,7 +50,6 @@ export default function NewItem(props: any) {
   const [loading, setLoading] = useState<boolean>(false);
   const handleClose = () => setOpenNew(false);
   const [Validation, setValidation] = useState<boolean>(true);
-
   const token =
     typeof window !== "undefined"
       ? // @ts-ignore
