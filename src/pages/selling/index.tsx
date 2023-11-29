@@ -117,11 +117,7 @@ export default function Selling() {
         JSON.parse(localStorage.getItem("token"))
       : "";
 
-  useEffect(() => {
-    if (Validation == false) {
-      router.push("/");
-    }
-  }, [Validation]);
+  
   const totalIncome = () => {
     // console.log("ggg", Products2);
     let total = 0;

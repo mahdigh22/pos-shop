@@ -9,16 +9,18 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { getDatabase, onValue, ref, remove } from "firebase/database";
+import { getDatabase, onValue, ref, remove, set } from "firebase/database";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useContext } from "react";
 import { useEffect, useState } from "react";
 import firebaseconf from "@/firebase";
 import { useSnackbar, SnackbarProvider } from "notistack";
 import NewProductForm from "@/components/new-product-form";
 import Items from "@/components/items";
-import { useAuth } from "@/hooks/useAuth";
-
+import AuthContext from "@/hooks/authContext";
+import firebaseconfbackup from "@/firebase-backup";
+import moment from "moment";
+import { v4 as uuidv4 } from "uuid";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -31,8 +33,8 @@ const style = {
   p: 2,
 };
 export default function NewItem(props: any) {
+  const { email, token } = useContext(AuthContext);
   const { enqueueSnackbar } = useSnackbar();
-  const { user } = useAuth();
 
   const [OpenNew, setOpenNew] = useState<boolean>(false);
   const [page, setPage] = React.useState(0);
@@ -40,6 +42,7 @@ export default function NewItem(props: any) {
   const [GetData, setGetData] = React.useState<boolean>(false);
   const router = useRouter();
   const [FReports, setFirebaseReports] = useState<any>([]);
+  const [FBackUp, setFirebaseBackup] = useState<any>([]);
 
   const axios = require("axios");
 
@@ -50,27 +53,97 @@ export default function NewItem(props: any) {
   const [loading, setLoading] = useState<boolean>(false);
   const handleClose = () => setOpenNew(false);
   const [Validation, setValidation] = useState<boolean>(true);
-  const token =
-    typeof window !== "undefined"
-      ? // @ts-ignore
 
-        JSON.parse(localStorage.getItem("token"))
-      : "";
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
+  const data = FBackUp
+    ? Object?.keys(FBackUp)?.map((item: any) => {
+        return FBackUp[item];
+      })
+    : [];
+  const makeBackup = async () => {
+    const db = getDatabase(firebaseconfbackup);
+    const starCountRef = ref(db);
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      setFirebaseBackup(data);
+    });
+    try {
+      const db = getDatabase(firebaseconfbackup);
 
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
+      const data = FBackUp
+        ? Object?.keys(FBackUp)?.map((item: any) => {
+            return FBackUp[item];
+          })
+        : [];
+      const currentDate = new Date();
 
-  const handleRoute = (path: any) => {
-    router.push(path);
-  };
-  useEffect(() => {
-    if (Validation == false) {
-      router.push("/");
+      const latestBackup = data
+        .filter((item: any) => item.email == email)
+        .filter((item: any) => {
+          const twentyFourHoursFromNow = new Date();
+          twentyFourHoursFromNow.setHours(currentDate.getHours() + 24);
+          const parsedDate = moment(
+            item?.date,
+            "dddd, MMMM Do, YYYY h:mm:ss A"
+          ).toDate();
+
+          return parsedDate.getTime() > twentyFourHoursFromNow.getTime();
+        });
+
+      if (latestBackup.length == 0 && data.length > 0) {
+        return;
+      }
+      if (token == "" || email == null) {
+        console.error("Token or email not found in localStorage");
+        return;
+      }
+
+      const date = moment().format("dddd, MMMM Do, YYYY h:mm:ss A");
+
+      const { data: list } = await axios.get(
+        "https://shop-server-iota.vercel.app/products",
+        {
+          params: { token, email },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "X-Custom-Header": "foobar",
+          },
+        }
+      );
+
+      const id = uuidv4();
+      // Assuming 'list' is an array of items
+      const formattedData = list.data
+        ? list?.data?.map((item: any) => ({
+            code: item.code,
+            quantity: +item.unit,
+          }))
+        : [];
+
+      await set(ref(db, id), {
+        list: formattedData,
+        date,
+        email,
+      });
+
+      console.log("Backup successful");
+    } catch (error) {
+      console.error("Backup failed:", error);
     }
-  }, [Validation]);
+  };
+
+  // Use the effect to run the backup on mount and set up an interval
+  useEffect(() => {
+    // Initial backup when the app starts
+
+    makeBackup();
+
+    // Schedule the backup every 24 hours (24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
+    const backupInterval = 24 * 60 * 60 * 1000;
+    const backupTimer = setInterval(makeBackup, backupInterval);
+
+    // Clear the interval on component unmount to avoid memory leaks
+    return () => clearInterval(backupTimer);
+  }, []);
 
   async function DeleteItem(code: any) {
     try {
@@ -162,6 +235,7 @@ export default function NewItem(props: any) {
   async function getProducts() {
     try {
       setLoading(true);
+
       const response = await axios.get(
         "https://shop-server-iota.vercel.app/products",
         {
@@ -177,12 +251,13 @@ export default function NewItem(props: any) {
       setValidation(true);
     } catch (error) {
       setGetData(!GetData);
-      setValidation(false);
+      setValidation(true);
     }
   }
   useEffect(() => {
-    getProducts();
-    // getDataformfirebase();
+    setTimeout(() => {
+      getProducts();
+    }, 1000);
   }, []);
 
   return (

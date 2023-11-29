@@ -205,11 +205,7 @@ export default function Orders() {
         setValidation(false);
       });
   }
-  useEffect(() => {
-    if (Validation == false) {
-      router.push("/");
-    }
-  }, [Validation]);
+  
 
   useEffect(() => {
     getProducts();

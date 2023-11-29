@@ -49,34 +49,35 @@ function Row(props: any) {
       : "";
   async function UpdateItem(id: any, Data: any) {
     setLoadingReturn(true);
-    const list2 = Data?.map((item: any) => {
-      return {
-        code: item.code,
 
-        quantity: +item.unit,
-      };
-    });
-    list2.length > 0 &&
-      (
-        await axios
-          .post("https://shop-server-iota.vercel.app/updateProducts", {
+    const list2 = Data?.map((item: any) => ({
+      code: item.code,
+      quantity: +item.unit,
+    }));
+
+    try {
+      if (list2.length > 0) {
+        const resp = await axios.post(
+          "https://shop-server-iota.vercel.app/updateProducts",
+          {
             list2,
             email,
-          })
-          .then((resp: any) => {
-            handleDeleteExpense(id, Data);
-            setLoadingReturn(false);
+          }
+        );
 
-            enqueueSnackbar("Bill has been returned", {
-              variant: "success",
-            });
-          })
-      ).catch(function (error: any) {
-        enqueueSnackbar("Error contacting server", {
-          variant: "error",
-        });
+        handleDeleteExpense(id, Data);
         setLoadingReturn(false);
+
+        enqueueSnackbar("Bill has been returned", {
+          variant: "success",
+        });
+      }
+    } catch (error) {
+      enqueueSnackbar("Error contacting server", {
+        variant: "error",
       });
+      setLoadingReturn(false);
+    }
   }
 
   const handleDeleteExpense = (id: any, Data: any) => {

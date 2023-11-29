@@ -1,5 +1,6 @@
 
 
+import AuthContext from "@/hooks/authContext";
 import {
   List,
   ListItem,
@@ -22,7 +23,7 @@ import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
 
 export default function NewProductSell(props: any) {
   const {
@@ -39,18 +40,9 @@ export default function NewProductSell(props: any) {
   const [Customers, setCustomers] = useState([]);
   const [paymentType, setPaymentType] = useState("Cash");
 
-  const token =
-    typeof window !== "undefined"
-      ? // @ts-ignore
+  const { email, token } = useContext(AuthContext
+    );
 
-        JSON.parse(localStorage.getItem("token"))
-      : "";
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if ((event.target as HTMLInputElement).value == "Cash") {

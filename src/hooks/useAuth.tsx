@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import {
   createContext,
   useContext,
@@ -5,63 +6,95 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-
-interface User {
-  name: string;
-  // Add any other user properties here
-}
-
-interface AuthContextProps {
-  user: User | null;
-  setUser: any;
-  token: any;
-  setToken: any;
-  isLoading: boolean;
-  login: () => void;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+import AuthContext from "./authContext";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [email, setEmail] = useState<any | null>(null);
   const [token, setToken] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const axios = require("axios");
+  const router = useRouter();
 
   useEffect(() => {
-    // Simulate checking if the user is authenticated
-    // You might want to replace this with your actual authentication logic
-    setTimeout(() => {
-      setUser({ name: "John Doe" });
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    const fetchData = async () => {
+      const storedToken = await localStorage.getItem("token");
+      const storedEmail = await localStorage.getItem("Email");
 
-  const login = () => {
-    // Add your login logic here
+      if (storedToken && storedEmail) {
+        // Data found in localStorage, set authentication state
+
+        setEmail(storedEmail);
+        setToken(storedToken);
+      }
+      if (email == null && token == null) {
+        logout();
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
+  const login = async (userData: any) => {
+    const { email, pass } = userData;
+
+    try {
+      const response = await axios.post(
+        "https://shop-server-iota.vercel.app/api/auth",
+        {
+          Email: email,
+          Pass: pass,
+        }
+      );
+
+      const validateResponse = await axios.get(
+        "https://shop-server-iota.vercel.app/user/validateToken",
+        {
+          params: { token: response?.data },
+          headers: {
+            Authorization: `Bearer ${response?.data}`,
+            "X-Custom-Header": "foobar",
+          },
+        }
+      );
+
+      if (validateResponse) {
+        setEmail(email === "222" || email === "111" ? "" : email);
+        setToken(validateResponse.config.params.token);
+        localStorage.setItem(
+          "token",
+          JSON.stringify(validateResponse.config.params.token)
+        );
+        localStorage.setItem(
+          "Email",
+          JSON.stringify(email === "222" || email === "111" ? "" : email)
+        );
+        setIsLoading(false);
+        router.push("/products");
+      } else {
+        // Handle the case when validation fails
+        router.push("/");
+      }
+    } catch (error) {
+      // Handle errors here
+      setIsLoading(false);
+      alert("Oh wrong Email or Password!");
+    }
   };
 
   const logout = () => {
-    // Add your logout logic here
+    setToken(null);
+    router.push("/");
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, setUser,setToken,token }}>
+    <AuthContext.Provider value={{ email, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = (): AuthContextProps => {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-
-  return context;
-};
+export default AuthProvider;

@@ -1,4 +1,6 @@
-import { useAuth } from "@/hooks/useAuth";
+import React, { useContext } from "react";
+
+import AuthContext from "@/hooks/authContext";
 import {
   Grid,
   Card,
@@ -15,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Login() {
-  const { setUser,setToken } = useAuth();
+  const { login } = useContext(AuthContext) || {};
 
   const [showPassword, setShowPassword] = useState(false);
   const [Loading, setLoading] = useState(false);
@@ -34,56 +36,11 @@ export default function Login() {
     setPass(event.target.value);
   };
 
-  async function getData() {
-    setLoading(true);
-    await axios
-      .post("https://shop-server-iota.vercel.app/api/auth", {
-        Email,
-        Pass,
-      })
-      .then(async function (response: any) {
-        console.log(response);
-        await axios
-          .get("https://shop-server-iota.vercel.app/user/validateToken", {
-            params: { token: response?.data },
-            headers: {
-              Authorization: `Bearer ${response?.data}`,
-              "X-Custom-Header": "foobar",
-            },
-          })
-          .then(function (response: any) {
-            if (response) {
-              setUser(Email == "222" || Email == "111" ? "" : Email);
-              setToken(response.config.params.token)
-              localStorage.setItem(
-                "token",
-                JSON.stringify(response.config.params.token)
-              );
-              localStorage.setItem(
-                "Email",
-                JSON.stringify(Email == "222" || Email == "111" ? "" : Email)
-              );
-              setLoading(false);
-
-              router.push("/products");
-              // window.location.reload();
-            } else {
-              // navigate('/login');
-              router.push("/");
-            }
-          });
-      })
-      .catch(function (error: any) {
-        // navigate('/login');
-        setLoading(false);
-        alert("Oh wrong Email or Password!");
-      });
-  }
   useEffect(() => {
     localStorage.removeItem("token");
   }, []);
   async function CheckIfValid() {
-    await getData();
+    await login({ email: Email, pass: Pass });
   }
 
   return (
