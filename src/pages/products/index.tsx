@@ -9,7 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { getDatabase, onValue, ref, remove, set } from "firebase/database";
+import { get, getDatabase, onValue, ref, remove, set } from "firebase/database";
 import { useRouter } from "next/navigation";
 import React, { useContext } from "react";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ import { useSnackbar, SnackbarProvider } from "notistack";
 import NewProductForm from "@/components/new-product-form";
 import Items from "@/components/items";
 import AuthContext from "@/hooks/authContext";
-import firebaseconfbackup from '@/firebase-backup/index';
+import firebaseconfbackup from "@/firebase-backup/index";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 const style = {
@@ -54,51 +54,48 @@ export default function NewItem(props: any) {
   const handleClose = () => setOpenNew(false);
   const [Validation, setValidation] = useState<boolean>(true);
 
-  const data = FBackUp
-    ? Object?.keys(FBackUp)?.map((item: any) => {
-        return FBackUp[item];
-      })
-    : [];
   const makeBackup = async () => {
-    const db = getDatabase(firebaseconfbackup);
-    const starCountRef = ref(db);
-    onValue(starCountRef, (snapshot) => {
-      const data = snapshot.val();
-      setFirebaseBackup(data);
-    });
     try {
       const db = getDatabase(firebaseconfbackup);
 
-      const data = FBackUp
-        ? Object?.keys(FBackUp)?.map((item: any) => {
-            return FBackUp[item];
-          })
-        : [];
-      const currentDate = new Date();
+      // Retrieve data from the Firebase Realtime Database
+      const snapshot = await get(ref(db));
+      const FBackUp = snapshot.val();
 
-      const latestBackup = data
-        .filter((item: any) => item.email == email)
-        .filter((item: any) => {
-          const twentyFourHoursFromNow = new Date();
-          twentyFourHoursFromNow.setHours(currentDate.getHours() + 24);
-          const parsedDate = moment(
-            item?.date,
-            "dddd, MMMM Do, YYYY h:mm:ss A"
-          ).toDate();
+      // Check if it's the first time and there is no backup
+      const isFirstTime = !FBackUp || Object.values(FBackUp).length === 0;
 
-          return parsedDate.getTime() > twentyFourHoursFromNow.getTime();
-        });
+      if (isFirstTime) {
+        console.log("First time, making backup.");
 
-      if (latestBackup.length == 0 && data.length > 0) {
-        return;
+        // Perform specific logic for the first backup if needed
+      } else {
+        // Filter the data to get the latest backup within the last 24 hours for a specific email
+        const data = Object.values(FBackUp);
+        const currentDate = new Date();
+        const twentyFourHoursFromNow = new Date();
+        twentyFourHoursFromNow.setHours(currentDate.getHours() + 24);
+
+        const latestBackup = data
+          ?.filter((item: any) => item.email === email)
+          ?.filter((item: any) => {
+            const parsedDate = moment(
+              item?.date,
+              "dddd, MMMM Do, YYYY h:mm:ss A"
+            ).toDate();
+            return parsedDate.getTime() > twentyFourHoursFromNow.getTime();
+          });
+
+        console.log("latestBackup", latestBackup);
+
+        // Check if there is no recent backup
+        if (!latestBackup || latestBackup.length === 0) {
+          console.log("No recent backup found within the last 24 hours.");
+          return;
+        }
       }
-      if (token == "" || email == null) {
-        console.error("Token or email not found in localStorage");
-        return;
-      }
 
-      const date = moment().format("dddd, MMMM Do, YYYY h:mm:ss A");
-
+      // Fetch data from an external API (e.g., list of products)
       const { data: list } = await axios.get(
         "https://shop-server-iota.vercel.app/products",
         {
@@ -111,17 +108,13 @@ export default function NewItem(props: any) {
       );
 
       const id = uuidv4();
-      // Assuming 'list' is an array of items
-      const formattedData = list.data
-        ? list?.data?.map((item: any) => ({
-            code: item.code,
-            quantity: +item.unit,
-          }))
-        : [];
 
+      // Assuming 'list' is an array of items
+
+      // Save the new backup to the Firebase Realtime Database
       await set(ref(db, id), {
-        list: formattedData,
-        date,
+        list: list?.data,
+        date: moment().format("dddd, MMMM Do, YYYY h:mm:ss A"),
         email,
       });
 
