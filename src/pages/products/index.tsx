@@ -18,7 +18,7 @@ import { useSnackbar, SnackbarProvider } from "notistack";
 import NewProductForm from "@/components/new-product-form";
 import Items from "@/components/items";
 import AuthContext from "@/hooks/authContext";
-import firebaseconfbackup from "@/firebase-backup";
+import firebaseconfbackup from '@/firebase-backup/index';
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 const style = {

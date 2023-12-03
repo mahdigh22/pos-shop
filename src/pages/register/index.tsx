@@ -96,7 +96,7 @@ export default function Register() {
                     )
                   );
 
-                  router.push("/new-item");
+                  router.push("/products");
                   setLoading(false);
                   // window.location.reload();
                 } else {

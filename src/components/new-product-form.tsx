@@ -1,7 +1,6 @@
-
-
 import {
   alpha,
+  Box,
   Button,
   Divider,
   FormControl,
@@ -10,13 +9,29 @@ import {
   MenuItem,
   Select,
   Stack,
+  styled,
   TextField,
   Typography,
 } from "@mui/material";
-import { getDatabase, ref, set, update } from "firebase/database";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { storage } from "@/firebase-backup/index";
 import { v4 as uuidv4 } from "uuid";
+import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import LoadingButton from "@mui/lab/LoadingButton";
+import SaveIcon from "@mui/icons-material/Save";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 export default function NewProductForm(props: any) {
   const {
@@ -32,6 +47,9 @@ export default function NewProductForm(props: any) {
   const [Code, setCode] = useState<any>(Data ? Data.code : 0);
   const [Name, setName] = useState<any>(Data ? Data.name : "");
   const [Price, setPrice] = useState<any>(Data ? +Data.price : 0);
+  const [loading, setLoading] = useState<any>(false);
+  const [progress, setProgress] = useState<any>(0);
+
   const [SellPrice1, setSellPrice1] = useState<any>(
     Data ? +Data.sellpricea : 0
   );
@@ -42,6 +60,9 @@ export default function NewProductForm(props: any) {
   const [Unit, setUnit] = useState<any>(Data ? +Data.unit : 1);
   const [Supplier, setSupplier] = useState<any>(Data ? Data.supplier : "");
   const [Currency, setCurrency] = useState<any>(Data ? Data.currency : "$");
+  const [imgsSrc, setImgsSrc] = useState<any>(Data ? Data.imgsSrc : "");
+  const [image, setImage] = useState<File | null>(null);
+
   const [Quantity, setQuantity] = useState<any>(Data ? +Data.quantity : 0);
   const [Error, setError] = useState<any>(false);
   const id = uuidv4();
@@ -87,7 +108,50 @@ export default function NewProductForm(props: any) {
   //     }
   //   );
   // };
+  const handleImageChange = (e: any) => {
+    if (e?.target?.files && e?.target?.files?.length > 0) {
+      const selectedFile = e?.target?.files[0];
+      setImage(selectedFile);
+    }
+  };
+
+  const handleUpload = () => {
+    if (image) {
+      const storageRef = ref(storage, `images/${image.name}`);
+
+      // const imageRef = storageRef.child(`files/${image.name}`);
+
+      const uploadTask = uploadBytesResumable(storageRef, image);
+
+      console.log("image", uploadTask);
+      setLoading(true);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          console.log(`Upload is ${progress}% done`);
+          setProgress(progress);
+        },
+        (error) => {
+          console.error("Error during upload:", error.message);
+        },
+        async () => {
+          await getDownloadURL(uploadTask.snapshot.ref).then((downloadURLs) => {
+            setImgsSrc(downloadURLs);
+            console.log("File available at", downloadURLs);
+          });
+        }
+      );
+    } else {
+      console.error("No image selected for upload.");
+    }
+  };
+
   const handleAdd = () => {
+    console.log("imgsSrcimgsSrc", imgsSrc);
+
     axios
       .post("https://shop-server-iota.vercel.app/newproduct", {
         id,
@@ -102,6 +166,7 @@ export default function NewProductForm(props: any) {
         Quantity,
         Unit,
         email,
+        imgsSrc,
       })
       .then(function (response: any) {
         handleClose();
@@ -116,24 +181,7 @@ export default function NewProductForm(props: any) {
   };
 
   const handleEdit = () => {
-    // const db = getDatabase(firebaseConf);
-    // const id =  Data?.id;
-    // const d: any = new Date();
-
-    // const date = moment(d).format("dddd, MMMM Do, YYYY h:mm:ss A");
-
-    // update(
-    //   ref(
-    //     db,
-
-    //     Data?.id
-    //   ),
-    //   {
-    //     list,
-    //     date,
-    //     id,
-    //   }
-    // );
+    console.log("imgsSrcimgsSrc", imgsSrc);
     axios
       .put("https://shop-server-iota.vercel.app/updateproduct", {
         // id,
@@ -148,6 +196,7 @@ export default function NewProductForm(props: any) {
         Quantity,
         Unit,
         email,
+        imgsSrc,
       })
       .then(function (response: any) {
         console.log(response);
@@ -298,6 +347,63 @@ export default function NewProductForm(props: any) {
               setUnit(e.target.value);
             }}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {/* <input
+              accept="image/*"
+              type="file"
+              onChange={(event: any) => {
+                handleImageChange(event);
+              }}
+            /> */}
+            <Box>
+              <Button
+                component="label"
+                variant="contained"
+                startIcon={<CloudUploadIcon />}
+                size="small"
+              >
+                Choose Image{" "}
+                <VisuallyHiddenInput
+                  type="file"
+                  accept="image/*"
+                  onChange={(event: any) => {
+                    handleImageChange(event);
+                  }}
+                />
+              </Button>
+            </Box>
+            <LoadingButton
+              size="small"
+              color="primary"
+              loading={loading && progress != 100}
+              loadingPosition="start"
+              startIcon={<SaveIcon />}
+              variant="outlined"
+              onClick={handleUpload}
+            >
+              <span>Save</span>
+            </LoadingButton>
+            <Typography
+              noWrap
+              sx={{
+                width: "220px",
+                color: "grey",
+                textDecoration: "underline",
+              }}
+              href={imgsSrc}
+              component="a"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {imgsSrc}
+            </Typography>
+
+            {/* <Button variant="outlined" size="small" onClick={handleUpload}>
+              upload
+            </Button> */}
+          </Box>
         </Grid>
         <Grid item xs={12}>
           <Stack direction="row" spacing={1}>

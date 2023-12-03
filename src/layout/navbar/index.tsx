@@ -209,6 +209,20 @@ export default function Navbar() {
                     Log out
                   </Typography>
                 </MenuItem>
+                <MenuItem>
+                  <Typography
+                    textAlign="center"
+                    component="a"
+                    // onClick={logout}
+                    sx={{
+                      textDecoration: "none",
+                      color: "grey",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Settings{" "}
+                  </Typography>
+                </MenuItem>
               </Menu>
             </Box>
           </Toolbar>
