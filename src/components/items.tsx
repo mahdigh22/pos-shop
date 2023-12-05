@@ -10,7 +10,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import * as React from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -20,6 +19,8 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
+import React, { useContext } from "react";
+import AuthContext from "@/hooks/authContext";
 
 function LinearProgressWithLabel(
   props: LinearProgressProps & { value: number }
@@ -51,6 +52,7 @@ export default function Items(props: any) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const axios = require("axios");
+  const { email, token,type } = useContext(AuthContext);
 
   const handleChangePage = (event: any, newPage: number) => {
     setPage(newPage);
@@ -300,7 +302,7 @@ export default function Items(props: any) {
                         <TableCell align="center">{row.sellpricea}</TableCell>
                         <TableCell align="center">{row.sellpriceb}</TableCell>
                         {!sell && (
-                          <TableCell align="right">{row.price}</TableCell>
+                          <TableCell align="right">{type=='user'?'-':row.price}</TableCell>
                         )}
                         <TableCell align="right">{row.category}</TableCell>
                         <TableCell align="right">{row.unit}</TableCell>
@@ -314,8 +316,10 @@ export default function Items(props: any) {
                                 onClick={() => {
                                   setEdit(true);
                                   setData(row);
+
                                   // DeleteItem(row.code);
                                 }}
+                                disabled={type=='user'}
                                 sx={{
                                   backgroundColor: "#59a96a",
                                   ":hover": {
@@ -337,6 +341,8 @@ export default function Items(props: any) {
                                   DeleteItem(row.code);
                                 }}
                                 color="error"
+                                disabled={type=='user'}
+
                               >
                                 Delete
                               </Button>

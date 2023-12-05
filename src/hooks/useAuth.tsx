@@ -15,6 +15,7 @@ interface AuthProviderProps {
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [email, setEmail] = useState<any | null>(null);
   const [token, setToken] = useState<any>(null);
+  const [type, setType] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const axios = require("axios");
   const router = useRouter();
@@ -53,25 +54,50 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const validateResponse = await axios.get(
         "https://shop-server-iota.vercel.app/user/validateToken",
         {
-          params: { token: response?.data },
+          params: { token: response?.data.token },
           headers: {
-            Authorization: `Bearer ${response?.data}`,
+            Authorization: `Bearer ${response?.data?.token}`,
             "X-Custom-Header": "foobar",
           },
         }
       );
 
       if (validateResponse) {
-        setEmail(email === "222" || email === "111" ? "" : email);
+        if (response.data.type == "admin") {
+          setEmail(email === "222" || email === "111" ? "" : email);
+        } else {
+          setEmail(
+            response?.data?.info?.name === "222" ||
+              response?.data?.info?.name === "111"
+              ? ""
+              : response?.data?.info?.name
+          );
+        }
+
+        setType(response.data.type);
         setToken(validateResponse.config.params.token);
         localStorage.setItem(
           "token",
           JSON.stringify(validateResponse.config.params.token)
         );
-        localStorage.setItem(
-          "Email",
-          JSON.stringify(email === "222" || email === "111" ? "" : email)
-        );
+        localStorage.setItem("type", JSON.stringify(response.data.type));
+        if (response.data.type == "admin") {
+          localStorage.setItem(
+            "Email",
+            JSON.stringify(email === "222" || email === "111" ? "" : email)
+          );
+        } else {
+          localStorage.setItem(
+            "Email",
+            JSON.stringify(
+              response?.data?.info?.name === "222" ||
+                response?.data?.info?.name === "111"
+                ? ""
+                : response?.data?.info?.name
+            )
+          );
+        }
+
         setIsLoading(false);
         router.push("/products");
       } else {
@@ -91,7 +117,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ email, token, login, logout }}>
+    <AuthContext.Provider value={{ email, token, login, logout, type }}>
       {children}
     </AuthContext.Provider>
   );

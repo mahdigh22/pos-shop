@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 
-import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -33,20 +32,18 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Router } from "next/router";
 import { useRouter } from "next/navigation";
 import { SnackbarProvider, VariantType, useSnackbar } from "notistack";
-
+import React, { useContext } from "react";
+import AuthContext from "@/hooks/authContext";
 function Row(props: any) {
+  const { email, token } = useContext(AuthContext);
+
   const { row, setLoading, setOpenSnackbar } = props;
   const axios = require("axios");
   const { enqueueSnackbar } = useSnackbar();
 
   const [open, setOpen] = React.useState(false);
   const [loadingReturn, setLoadingReturn] = React.useState(false);
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
+  
   async function UpdateItem(id: any, Data: any) {
     setLoadingReturn(true);
 
@@ -172,6 +169,7 @@ function Row(props: any) {
 export default function Return() {
   const axios = require("axios");
   const router = useRouter();
+  const { email, token } = useContext(AuthContext);
 
   const [FReports, setFirebaseReports] = useState<any>([]);
   const [DReports, setDatabaseReports] = useState<any>([]);
@@ -204,13 +202,7 @@ export default function Return() {
         return FReports[item];
       })
     : [];
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
-
+ 
   // useEffect(() => {
   //   if (email !== "222") {
   //     router.push("/reports");

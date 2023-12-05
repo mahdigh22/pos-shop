@@ -12,12 +12,13 @@ import {
 import { get, getDatabase, onValue, ref, remove, set } from "firebase/database";
 import { useRouter } from "next/navigation";
 import React, { useContext } from "react";
+import AuthContext from "@/hooks/authContext";
+
 import { useEffect, useState } from "react";
 import firebaseconf from "@/firebase";
 import { useSnackbar, SnackbarProvider } from "notistack";
 import NewProductForm from "@/components/new-product-form";
 import Items from "@/components/items";
-import AuthContext from "@/hooks/authContext";
 import firebaseconfbackup from "@/firebase-backup/index";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
@@ -33,7 +34,7 @@ const style = {
   p: 2,
 };
 export default function NewItem(props: any) {
-  const { email, token } = useContext(AuthContext);
+  const { email, token,type } = useContext(AuthContext);
   const { enqueueSnackbar } = useSnackbar();
 
   const [OpenNew, setOpenNew] = useState<boolean>(false);
@@ -88,7 +89,6 @@ export default function NewItem(props: any) {
             return parsedDate.getTime() > twentyFourHoursFromNow.getTime();
           });
 
-        console.log("latestBackup", latestBackup.length);
         if (latestBackupwithemail.length == 0) {
           console.log("fssff");
         }

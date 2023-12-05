@@ -20,7 +20,8 @@ import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
-
+import React, { useContext } from "react";
+import AuthContext from "@/hooks/authContext";
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -44,6 +45,8 @@ export default function NewProductForm(props: any) {
     Products,
   } = props;
   console.log("data", Data);
+  const { email, token } = useContext(AuthContext);
+
   const [Code, setCode] = useState<any>(Data ? Data.code : 0);
   const [Name, setName] = useState<any>(Data ? Data.name : "");
   const [Price, setPrice] = useState<any>(Data ? +Data.price : 0);
@@ -67,12 +70,7 @@ export default function NewProductForm(props: any) {
   const [Error, setError] = useState<any>(false);
   const id = uuidv4();
   const axios = require("axios");
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
+  
 
   const list = [
     {

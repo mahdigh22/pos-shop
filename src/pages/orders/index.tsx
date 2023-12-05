@@ -14,7 +14,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -29,6 +28,8 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Router } from "next/router";
 import { useRouter, usePathname } from "next/navigation";
+import React, { useContext } from "react";
+import AuthContext from "@/hooks/authContext";
 import {
   SnackbarProvider,
   VariantType,
@@ -76,6 +77,7 @@ function a11yProps(index: number) {
 export default function Orders() {
   const [page, setPage] = React.useState(0);
   const [event, setEvent] = useState<any>("");
+  const { email, token } = useContext(AuthContext);
 
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [loading, setLoading] = useState<boolean>(false);
@@ -85,18 +87,7 @@ export default function Orders() {
   const router = useRouter();
   const id = uuidv4();
 
-  const token =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("token"))
-      : "";
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
+  
 
   const axios = require("axios");
 
@@ -626,13 +617,9 @@ export default function Orders() {
 function Row(props: { row: any; getorders: any }) {
   const { row, getorders } = props;
   const [open, setOpen] = React.useState(false);
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
+  const { email, token } = useContext(AuthContext);
 
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
-
+  
   const axios = require("axios");
   const isOrder = true;
   async function UpdateItem(id: any, Data: any) {

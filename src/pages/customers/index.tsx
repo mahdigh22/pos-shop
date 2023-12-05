@@ -1,6 +1,5 @@
 
 import { alpha, Box, Button, Card, Grid, Modal, Stack } from "@mui/material";
-import * as React from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,7 +10,8 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
 import NewCustomerForm from "@/components/new-customer-form";
-
+import React, { useContext } from "react";
+import AuthContext from "@/hooks/authContext";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -25,6 +25,8 @@ const style = {
   p: 2,
 };
 export default function Customers() {
+  const { email, token } = useContext(AuthContext);
+
   const axios = require("axios");
   const [OpenNew, setOpenNew] = useState<boolean>(false);
 
@@ -33,19 +35,7 @@ export default function Customers() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [Edit, setEdit] = useState<boolean>(false);
-  const token =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("token"))
-      : "";
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
-
+  
   const [loading, setLoading] = useState(false);
   const handleChangePage = (event: any, newPage: number) => {
     setPage(newPage);

@@ -29,7 +29,8 @@ import { useRouter } from "next/navigation";
 import firebaseconf from "@/firebase";
 import Items from "@/components/items";
 import NewProductSell from "@/components/new-product-sell";
-
+import React, { useContext } from "react";
+import AuthContext from "@/hooks/authContext";
 const TAX_RATE = 2;
 const style2 = {
   position: "absolute" as "absolute",
@@ -89,6 +90,7 @@ const invoiceTotal = invoiceTaxes + invoiceSubtotal;
 export default function Selling() {
   const axios = require("axios");
   const [FireList, setFireList] = useState([]);
+  const { email, token } = useContext(AuthContext);
 
   const [Products, setProducts] = useState<any>([]);
   const [type, setType] = useState("TypeA");
@@ -104,19 +106,7 @@ export default function Selling() {
   const [OpenSell, setOpenSell] = useState<boolean>(false);
   const [Validation, setValidation] = useState<boolean>(true);
   const router = useRouter();
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
-  const token =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("token"))
-      : "";
-
+ 
   
   const totalIncome = () => {
     // console.log("ggg", Products2);

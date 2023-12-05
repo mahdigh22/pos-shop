@@ -30,7 +30,7 @@ const pages = [
 const settings = ["Profile", "Logout"];
 export default function Navbar() {
   // @ts-ignore
-  const { email, logout } = useContext(AuthContext);
+  const { email, logout, type } = useContext(AuthContext);
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -195,6 +195,24 @@ export default function Navbar() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
+                {type == "admin" && (
+                  <MenuItem>
+                    <Typography
+                      textAlign="center"
+                      component="a"
+                      onClick={() => {
+                        router.push("/settings");
+                      }}
+                      sx={{
+                        textDecoration: "none",
+                        color: "grey",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Settings{" "}
+                    </Typography>
+                  </MenuItem>
+                )}
                 <MenuItem>
                   <Typography
                     textAlign="center"
@@ -207,20 +225,6 @@ export default function Navbar() {
                     }}
                   >
                     Log out
-                  </Typography>
-                </MenuItem>
-                <MenuItem>
-                  <Typography
-                    textAlign="center"
-                    component="a"
-                    // onClick={logout}
-                    sx={{
-                      textDecoration: "none",
-                      color: "grey",
-                      fontWeight: 500,
-                    }}
-                  >
-                    Settings{" "}
                   </Typography>
                 </MenuItem>
               </Menu>

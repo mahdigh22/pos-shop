@@ -14,9 +14,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-
+import React, { useContext } from "react";
+import AuthContext from "@/hooks/authContext";
 import { v4 as uuidv4 } from "uuid";
 export default function NewCustomerForm(props: any) {
+  const { email, token } = useContext(AuthContext);
+
   const { getCustomers, handleClose, edit, rowData } = props;
   const [name, setName] = useState<any>(edit ? rowData.name : "");
   const [number, setNumber] = useState<any>(edit ? rowData.number : 0);
@@ -26,12 +29,7 @@ export default function NewCustomerForm(props: any) {
   const [id, setId] = useState<any>(edit ? rowData._id : uuidv4());
   const axios = require("axios");
   console.log("rowData", rowData);
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
+ 
   const handleAdd = () => {
     edit
       ? axios

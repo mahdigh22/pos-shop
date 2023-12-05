@@ -1,5 +1,4 @@
 import { Box, Collapse, Grid, IconButton, Typography } from "@mui/material";
-import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,6 +11,8 @@ import { getDatabase, onValue, ref } from "firebase/database";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import firebaseconf from "@/firebase";
+import React, { useContext } from "react";
+import AuthContext from "@/hooks/authContext";
 function createData(
   name: string,
   calories: number,
@@ -119,14 +120,11 @@ function Row(props: any) {
 
 export default function FReports() {
   const axios = require("axios");
+  const { email, token } = useContext(AuthContext);
+
   const [FReports, setFirebaseReports] = useState<any>([]);
   const [DReports, setDatabaseReports] = useState<any>([]);
-  const email =
-    typeof window !== "undefined"
-      ? // @ts-ignore
-
-        JSON.parse(localStorage.getItem("Email"))
-      : "";
+  
   React.useEffect(() => {
     getReportsformfirebase();
     // getReportsformDatabase();
