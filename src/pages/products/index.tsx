@@ -75,7 +75,9 @@ export default function NewItem(props: any) {
         const currentDate = new Date();
         const twentyFourHoursFromNow = new Date();
         twentyFourHoursFromNow.setHours(currentDate.getHours() + 24);
-
+        const latestBackupwithemail = data?.filter(
+          (item: any) => item.email === email
+        );
         const latestBackup = data
           ?.filter((item: any) => item.email === email)
           ?.filter((item: any) => {
@@ -86,10 +88,12 @@ export default function NewItem(props: any) {
             return parsedDate.getTime() > twentyFourHoursFromNow.getTime();
           });
 
-        console.log("latestBackup", latestBackup);
-
+        console.log("latestBackup", latestBackup.length);
+        if (latestBackupwithemail.length == 0) {
+          console.log("fssff");
+        }
         // Check if there is no recent backup
-        if (!latestBackup || latestBackup.length === 0) {
+        else if (!latestBackup || latestBackup.length === 0) {
           console.log("No recent backup found within the last 24 hours.");
           return;
         }
