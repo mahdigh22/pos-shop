@@ -45,8 +45,15 @@ export default function Login() {
 
   return (
     <Grid container sx={{ height: "100vh" }}>
-      <Grid item xs={8} md={6} lg={6}>
-        <Card sx={{ p: 2, boxShadow: "0", height: "100%", width: "100%" }}>
+      <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
+        <Card
+          sx={{
+            p: 2,
+            boxShadow: "0",
+            height: "100%",
+            width: { xs: "100%", md: "50%" },
+          }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -120,7 +127,7 @@ export default function Login() {
           </Box>
         </Card>
       </Grid>
-      {onlyMediumScreen && (
+      {/* {onlyMediumScreen && (
         <Grid item xs={6}>
           <Card
             sx={{
@@ -136,7 +143,7 @@ export default function Login() {
             />
           </Card>
         </Grid>
-      )}
+      )} */}
     </Grid>
   );
 }

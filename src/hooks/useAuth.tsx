@@ -15,6 +15,7 @@ interface AuthProviderProps {
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [email, setEmail] = useState<any | null>(null);
   const [token, setToken] = useState<any>(null);
+  const [pass, setPass] = useState<any>(null);
   const [type, setType] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const axios = require("axios");
@@ -73,6 +74,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               : response?.data?.info?.name
           );
         }
+        setPass(pass)
 
         setType(response.data.type);
         setToken(validateResponse.config.params.token);
@@ -157,7 +159,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               : response?.data?.info?.name
           );
         }
-
+setPass(PassData)
         setType(response.data.type);
         setToken(validateResponse.config.params.token);
         localStorage.setItem(
@@ -199,7 +201,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ email, token, login, logout, type, register }}
+      value={{ email, token, login, logout, type, register,pass }}
     >
       {children}
     </AuthContext.Provider>

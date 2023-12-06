@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   Grid,
+  IconButton,
   LinearProgress,
   LinearProgressProps,
   Slider,
@@ -21,6 +22,7 @@ import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
 import React, { useContext } from "react";
 import AuthContext from "@/hooks/authContext";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function LinearProgressWithLabel(
   props: LinearProgressProps & { value: number }
@@ -52,7 +54,7 @@ export default function Items(props: any) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const axios = require("axios");
-  const { email, token,type } = useContext(AuthContext);
+  const { email, token, type } = useContext(AuthContext);
 
   const handleChangePage = (event: any, newPage: number) => {
     setPage(newPage);
@@ -67,7 +69,7 @@ export default function Items(props: any) {
 
   return (
     <>
-      <Grid container  justifyContent="center">
+      <Grid container justifyContent="center">
         <Grid item xs={12}>
           <Card sx={{ height: "100%", boxShadow: 0 }}>
             {loading ? (
@@ -302,7 +304,9 @@ export default function Items(props: any) {
                         <TableCell align="center">{row.sellpricea}</TableCell>
                         <TableCell align="center">{row.sellpriceb}</TableCell>
                         {!sell && (
-                          <TableCell align="right">{type=='user'?'-':row.price}</TableCell>
+                          <TableCell align="right">
+                            {type == "user" ? "-" : row.price}
+                          </TableCell>
                         )}
                         <TableCell align="right">{row.category}</TableCell>
                         <TableCell align="right">{row.unit}</TableCell>
@@ -319,7 +323,7 @@ export default function Items(props: any) {
 
                                   // DeleteItem(row.code);
                                 }}
-                                disabled={type=='user'}
+                                disabled={type == "user"}
                                 sx={{
                                   backgroundColor: "#59a96a",
                                   ":hover": {
@@ -335,17 +339,27 @@ export default function Items(props: any) {
                         {!sell && (
                           <TableCell align="right">
                             <Stack direction="row" spacing={1}>
-                              <Button
+                              <IconButton
+                                aria-label="delete"
+                                size="large"
+                                onClick={() => {
+                                  DeleteItem(row.code);
+                                }}
+                                color="error"
+                                disabled={type == "user"}
+                              >
+                                <DeleteIcon fontSize="inherit" />
+                              </IconButton>
+                              {/* <Button
                                 variant="contained"
                                 onClick={() => {
                                   DeleteItem(row.code);
                                 }}
                                 color="error"
-                                disabled={type=='user'}
-
+                                disabled={type == "user"}
                               >
                                 Delete
-                              </Button>
+                              </Button> */}
                             </Stack>
                           </TableCell>
                         )}

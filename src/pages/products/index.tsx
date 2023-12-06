@@ -254,7 +254,7 @@ export default function NewItem(props: any) {
   useEffect(() => {
     setTimeout(() => {
       getProducts();
-    }, 1000);
+    }, 500);
   }, []);
 
   return (

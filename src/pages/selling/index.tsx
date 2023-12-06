@@ -342,7 +342,7 @@ export default function Selling() {
         </Box>
       </Modal>
       <Grid container spacing={1}>
-        <Grid item xs={12} md={12} lg={4}>
+        <Grid item xs={12} md={6} lg={6}>
           <Grid container spacing={1} sx={{ mt: 0.5 }}>
             <Grid item xs={12}>
               Categories:
@@ -370,11 +370,11 @@ export default function Selling() {
               excludedProducts
                 .filter((item: any) => item.category == category)
                 .map((row: any, index: any) => (
-                  <Grid item xs={6} sm={4} key={index}>
+                  <Grid item xs={6} sm={3} key={index}>
                     <Card
                       sx={{
                         p: 1,
-                        width: "80%",
+                        width: "100%",
                         backgroundColor:
                           row.quantity == 0 ? "divider" : "#59a96a",
                         cursor: row.quantity == 0 ? "not-allowed" : "pointer",
@@ -409,7 +409,7 @@ export default function Selling() {
           sx={{ height: "90vh", mt: 1, borderWidth: 3 }}
         /> */}
 
-        <Grid item xs={12} md={12} lg={8}>
+        <Grid item xs={12} md={6} lg={6}>
           <Box
             sx={{
               display: "flex",
@@ -458,14 +458,14 @@ export default function Selling() {
             <>loading</>
           ) : (
             <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 700 }} aria-label="spanning table">
+              <Table  aria-label="spanning table">
                 <TableHead sx={{ backgroundColor: "#59a96a" }}>
                   <TableRow>
                     <TableCell>code</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell align="left">Qty.</TableCell>
-                    <TableCell align="right">Price/unit</TableCell>
-                    <TableCell align="right">Sum</TableCell>
+                    <TableCell align="left">Price/unit</TableCell>
+                    <TableCell align="left">Sum</TableCell>
                     <TableCell align="right" />
                   </TableRow>
                 </TableHead>
@@ -475,8 +475,8 @@ export default function Selling() {
                       // console.log("roo0", row);
                       return (
                         <TableRow key={index}>
-                          <TableCell>{row?.code}</TableCell>
-                          <TableCell>{row?.name}</TableCell>
+                          <TableCell align="left">{row?.code}</TableCell>
+                          <TableCell align="left">{row?.name}</TableCell>
                           <TableCell align="left">
                             <TextField
                               variant="outlined"
@@ -495,12 +495,13 @@ export default function Selling() {
 
                                 setProducts2(newState);
                               }}
+                              sx={{width:'60px'}}
                             />
                           </TableCell>
-                          <TableCell align="right">
+                          <TableCell align="left">
                             {type == "TypeA" ? row.sellpricea : row.sellpriceb}
                           </TableCell>
-                          <TableCell align="right">
+                          <TableCell align="left">
                             {type == "TypeA"
                               ? row.sellpricea * +row?.unit
                               : row.sellpriceb * +row?.unit}
@@ -523,16 +524,15 @@ export default function Selling() {
                     {Products2?.length > 0 && (
                       <>
                         <TableRow>
-                          <TableCell rowSpan={3} />
                           <TableCell
-                            colSpan={2}
+                            colSpan={4}
                             sx={{ fontWeight: 600, fontSize: "15px" }}
                           >
                             Subtotal
                           </TableCell>
                           <TableCell
                             align="right"
-                            colSpan={2}
+                            colSpan={1}
                             sx={{ fontWeight: 600, fontSize: "15px" }}
                           >
                             {totalIncome()}
