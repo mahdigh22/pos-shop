@@ -110,6 +110,87 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       alert("Oh wrong Email or Password!");
     }
   };
+  const register = async (userData: any) => {
+    const { emailData, PassData, id, Name, Number } = userData;
+
+    const resp = await axios.post(
+      "https://shop-server-iota.vercel.app/register",
+      {
+        emailData,
+        PassData,
+        id,
+        Name,
+        Number,
+      }
+    );
+    console.log("ddd", resp);
+    if (resp.data == "found") {
+      alert("Username already exist!");
+    } else {
+      const response = await axios.post(
+        "https://shop-server-iota.vercel.app/api/auth",
+        {
+          Email: emailData,
+          Pass: PassData,
+        }
+      );
+
+      const validateResponse = await axios.get(
+        "https://shop-server-iota.vercel.app/user/validateToken",
+        {
+          params: { token: response?.data.token },
+          headers: {
+            Authorization: `Bearer ${response?.data?.token}`,
+            "X-Custom-Header": "foobar",
+          },
+        }
+      );
+
+      if (validateResponse) {
+        if (response.data.type == "admin") {
+          setEmail(emailData === "222" || emailData === "111" ? "" : emailData);
+        } else {
+          setEmail(
+            response?.data?.info?.name === "222" ||
+              response?.data?.info?.name === "111"
+              ? ""
+              : response?.data?.info?.name
+          );
+        }
+
+        setType(response.data.type);
+        setToken(validateResponse.config.params.token);
+        localStorage.setItem(
+          "token",
+          JSON.stringify(validateResponse.config.params.token)
+        );
+        localStorage.setItem("type", JSON.stringify(response.data.type));
+        if (response.data.type == "admin") {
+          localStorage.setItem(
+            "Email",
+            JSON.stringify(
+              emailData === "222" || emailData === "111" ? "" : emailData
+            )
+          );
+        } else {
+          localStorage.setItem(
+            "Email",
+            JSON.stringify(
+              response?.data?.info?.name === "222" ||
+                response?.data?.info?.name === "111"
+                ? ""
+                : response?.data?.info?.name
+            )
+          );
+        }
+
+        router.push("/products");
+      } else {
+        // Handle the case when validation fails
+        router.push("/");
+      }
+    }
+  };
 
   const logout = () => {
     setToken(null);
@@ -117,7 +198,9 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ email, token, login, logout, type }}>
+    <AuthContext.Provider
+      value={{ email, token, login, logout, type, register }}
+    >
       {children}
     </AuthContext.Provider>
   );

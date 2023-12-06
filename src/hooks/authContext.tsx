@@ -8,6 +8,7 @@ interface AuthContextProps {
   setToken?: any;
   isLoading?: boolean;
   login?: any;
+  register?: any;
   type?: any;
   logout?: () => void;
 }

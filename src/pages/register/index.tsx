@@ -1,4 +1,3 @@
-
 import {
   Grid,
   Card,
@@ -14,21 +13,25 @@ import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import React, { useContext } from "react";
 
+import AuthContext from "@/hooks/authContext";
 export default function Register() {
   const theme = useTheme();
+  const { register } = useContext(AuthContext);
+
   const axios = require("axios");
   const router = useRouter();
   const [Loading, setLoading] = useState(false);
 
-  const [Email, setEmail] = useState("");
-  const [Pass, setPass] = useState("");
+  const [emailData, setEmailData] = useState("");
+  const [PassData, setPassData] = useState("");
   const [Number, setNumber] = useState();
   const [Name, setName] = useState();
   const id = uuidv4();
   const onlyMediumScreen = useMediaQuery(theme.breakpoints.up("md"));
   const saveEmail = (event: any) => {
-    setEmail(event.target.value);
+    setEmailData(event.target.value);
   };
   const saveName = (event: any) => {
     setName(event.target.value);
@@ -37,83 +40,29 @@ export default function Register() {
     setNumber(event.target.value);
   };
   const savePass = (event: any) => {
-    setPass(event.target.value);
+    setPassData(event.target.value);
   };
   async function Register() {
     setLoading(true);
     if (
-      Email.includes(".") ||
-      Email.includes("/") ||
-      Email.includes("\\") ||
-      Email.includes("/0") ||
-      Email.includes(" ") ||
+      emailData.includes(".") ||
+      emailData.includes("/") ||
+      emailData.includes("\\") ||
+      emailData.includes("/0") ||
+      emailData.includes(" ") ||
       Name == "" ||
       Loading ||
-      Pass == ""
+      PassData == ""
     ) {
       () => {};
     } else {
-      const resp = await axios.post(
-        "https://shop-server-iota.vercel.app/register",
-        {
-          Email,
-          Pass,
-          id,
-          Name,
-          Number,
-        }
-      );
-      console.log("ddd", resp);
-      if (resp.data == "found") {
-        alert("Username already exist!");
-        setLoading(false);
-      } else {
-        await axios
-          .post("https://shop-server-iota.vercel.app/api/auth", {
-            Email,
-            Pass,
-          })
-          .then(async function (response: any) {
-            console.log(response);
-            await axios
-              .get("https://shop-server-iota.vercel.app/user/validateToken", {
-                params: { token: response?.data },
-                headers: {
-                  Authorization: `Bearer ${response?.data}`,
-                  "X-Custom-Header": "foobar",
-                },
-              })
-              .then(function (response: any) {
-                if (response) {
-                  localStorage.setItem(
-                    "token",
-                    JSON.stringify(response.config.params.token)
-                  );
-                  localStorage.setItem(
-                    "Email",
-                    JSON.stringify(
-                      Email == "222" || Email == "111" ? "" : Email
-                    )
-                  );
-
-                  router.push("/products");
-                  setLoading(false);
-                  // window.location.reload();
-                } else {
-                  // navigate('/login');
-
-                  router.push("/");
-                  setLoading(false);
-                }
-              });
-          })
-          .catch(function (error: any) {
-            // navigate('/login');
-            setLoading(false);
-
-            alert("Oh wrong Email or Password!");
-          });
-      }
+      await register({
+        emailData: emailData,
+        PassData: PassData,
+        id: id,
+        Name: Name,
+        Number: Number,
+      });
     }
   }
   return (
@@ -155,21 +104,21 @@ export default function Register() {
                   id="outlined-basic"
                   label="User Name"
                   error={
-                    Email.includes(".") ||
-                    Email.includes("/") ||
-                    Email.includes("\\") ||
-                    Email.includes("/0") ||
-                    Email.includes(" ")
+                    emailData.includes(".") ||
+                    emailData.includes("/") ||
+                    emailData.includes("\\") ||
+                    emailData.includes("/0") ||
+                    emailData.includes(" ")
                   }
                   variant="outlined"
                   onChange={saveEmail}
                   fullWidth
                   helperText={
-                    Email.includes(".") ||
-                    Email.includes("/") ||
-                    Email.includes("\\") ||
-                    Email.includes("/0") ||
-                    Email.includes(" ")
+                    emailData.includes(".") ||
+                    emailData.includes("/") ||
+                    emailData.includes("\\") ||
+                    emailData.includes("/0") ||
+                    emailData.includes(" ")
                       ? `UserName should not contain "/", "\" , "\0" , "." , or " " `
                       : ""
                   }
@@ -202,14 +151,14 @@ export default function Register() {
                     },
                   }}
                   disabled={
-                    Email.includes(".") ||
-                    Email.includes("/") ||
-                    Email.includes("\\") ||
-                    Email.includes("/0") ||
-                    Email.includes(" ") ||
+                    emailData.includes(".") ||
+                    emailData.includes("/") ||
+                    emailData.includes("\\") ||
+                    emailData.includes("/0") ||
+                    emailData.includes(" ") ||
                     Name == "" ||
                     Loading ||
-                    Pass == ""
+                    PassData == ""
                   }
                 >
                   Register
