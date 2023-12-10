@@ -87,8 +87,6 @@ export default function Orders() {
   const router = useRouter();
   const id = uuidv4();
 
-  
-
   const axios = require("axios");
 
   const handleChangePage = (event: any, newPage: number) => {
@@ -196,7 +194,6 @@ export default function Orders() {
         setValidation(false);
       });
   }
-  
 
   useEffect(() => {
     getProducts();
@@ -619,39 +616,46 @@ function Row(props: { row: any; getorders: any }) {
   const [open, setOpen] = React.useState(false);
   const { email, token } = useContext(AuthContext);
 
-  
   const axios = require("axios");
   const isOrder = true;
   async function UpdateItem(id: any, Data: any) {
-    const list2 = Data?.map((item: any) => {
+    if (!Data) {
+      // Handle the case when Data is not available
+      return;
+    }
+
+    const list2 = Data.map((item: any) => {
       return {
         code: item.code,
-
         quantity: +item.orderQuantity,
       };
     });
-    list2.length > 0 &&
-      (
-        await axios
-          .post("https://shop-server-iota.vercel.app/updateProducts", {
-            list2,
-            email,
-            isOrder,
-            id,
-          })
-          .then((resp: any) => {
-            getorders();
 
-            enqueueSnackbar("Order had inserted", {
-              variant: "success",
-            });
-          })
-      ).catch(function (error: any) {
+    if (list2.length > 0) {
+      try {
+        const resp = await axios.post(
+          "https://shop-server-iota.vercel.app/updateProducts",
+          {
+            list2,
+            email, // Make sure 'email' is defined somewhere in your code
+            isOrder, // Make sure 'isOrder' is defined somewhere in your code
+            id,
+          }
+        );
+
+        getorders();
+
+        enqueueSnackbar("Order has been inserted", {
+          variant: "success",
+        });
+      } catch (error) {
         enqueueSnackbar("Error contacting server", {
           variant: "error",
         });
-      });
+      }
+    }
   }
+
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>

@@ -70,7 +70,6 @@ export default function NewProductForm(props: any) {
   const [Error, setError] = useState<any>(false);
   const id = uuidv4();
   const axios = require("axios");
-  
 
   const list = [
     {
@@ -375,7 +374,7 @@ export default function NewProductForm(props: any) {
             <LoadingButton
               size="small"
               color="primary"
-              loading={loading && progress != 100}
+              loading={loading && progress != 100 || image == null}
               loadingPosition="start"
               startIcon={<SaveIcon />}
               variant="outlined"

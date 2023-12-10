@@ -202,7 +202,7 @@ export default function Return() {
         return FReports[item];
       })
     : [];
- 
+ console.log('data',data)
   // useEffect(() => {
   //   if (email !== "222") {
   //     router.push("/reports");
@@ -237,7 +237,7 @@ export default function Return() {
                 <TableBody>
                   {data
                     ?.filter(
-                      (item: any) => item.email == email && !item.returned
+                      (item: any) => item.email == email && item.returned.return=='false'
                     )
                     ?.map((row: any, index: any) => (
                       <Row

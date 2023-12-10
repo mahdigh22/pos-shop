@@ -19,7 +19,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { getDatabase, onValue, ref, set } from "firebase/database";
+import { getDatabase, onValue, ref, set, child } from "firebase/database";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -106,8 +106,7 @@ export default function Selling() {
   const [OpenSell, setOpenSell] = useState<boolean>(false);
   const [Validation, setValidation] = useState<boolean>(true);
   const router = useRouter();
- 
-  
+
   const totalIncome = () => {
     // console.log("ggg", Products2);
     let total = 0;
@@ -192,6 +191,9 @@ export default function Selling() {
     total: any,
     email: any
   ) {
+
+    const returned = { return: "false" };
+
     set(
       ref(
         db,
@@ -206,6 +208,7 @@ export default function Selling() {
         total,
         id,
         email,
+        returned,
       }
     );
     UpdateItem();
@@ -458,7 +461,7 @@ export default function Selling() {
             <>loading</>
           ) : (
             <TableContainer component={Paper}>
-              <Table  aria-label="spanning table">
+              <Table aria-label="spanning table">
                 <TableHead sx={{ backgroundColor: "#59a96a" }}>
                   <TableRow>
                     <TableCell>code</TableCell>
@@ -495,7 +498,7 @@ export default function Selling() {
 
                                 setProducts2(newState);
                               }}
-                              sx={{width:'60px'}}
+                              sx={{ width: "60px" }}
                             />
                           </TableCell>
                           <TableCell align="left">

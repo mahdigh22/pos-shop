@@ -152,7 +152,7 @@ export default function NewItem(props: any) {
         const data = snapshot.val();
         storedValue = data; // Assign the value to the variable
       });
-
+console.log('stored',storedValue)
       const data2 = Object?.keys(storedValue)
         ?.map((item: any) => storedValue[item])
         ?.filter(
@@ -160,6 +160,7 @@ export default function NewItem(props: any) {
             item?.email == email && `${item?.returned.return}` == "false"
         )
         ?.map((item: any, index: any) => item?.list[index]?.code);
+
       if (data2.includes(code)) {
         enqueueSnackbar("This product is found in return page", {
           variant: "error",

@@ -13,35 +13,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import firebaseconf from "@/firebase";
 import React, { useContext } from "react";
 import AuthContext from "@/hooks/authContext";
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number,
-  price: number
-) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
-    history: [
-      {
-        date: "2020-01-05",
-        customerId: "11091700",
-        amount: 3,
-      },
-      {
-        date: "2020-01-02",
-        customerId: "Anonymous",
-        amount: 1,
-      },
-    ],
-  };
-}
+
 
 function Row(props: any) {
   const { row } = props;
@@ -65,8 +37,8 @@ function Row(props: any) {
         <TableCell>{row?.CustomerName}</TableCell>
         <TableCell>{row?.total}</TableCell>
         <TableCell>{row?.deposit}</TableCell>
-        <TableCell sx={{ color: row?.returned ? "red" : "#59a96a" }}>
-          {row?.returned ? "Returned" : "Sold"}
+        <TableCell sx={{ color: row?.returned.return=='true' ? "red" : "#59a96a" }}>
+          {row?.returned.return=='true' ? "Returned" : "Sold"}
         </TableCell>
         <TableCell align="right">{row?.date}</TableCell>
       </TableRow>
