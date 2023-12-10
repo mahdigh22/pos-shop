@@ -13,7 +13,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import firebaseconf from "@/firebase";
 import React, { useContext } from "react";
 import AuthContext from "@/hooks/authContext";
-
+import moment from "moment";
 
 function Row(props: any) {
   const { row } = props;
@@ -37,8 +37,10 @@ function Row(props: any) {
         <TableCell>{row?.CustomerName}</TableCell>
         <TableCell>{row?.total}</TableCell>
         <TableCell>{row?.deposit}</TableCell>
-        <TableCell sx={{ color: row?.returned.return=='true' ? "red" : "#59a96a" }}>
-          {row?.returned.return=='true' ? "Returned" : "Sold"}
+        <TableCell
+          sx={{ color: row?.returned.return == "true" ? "red" : "#59a96a" }}
+        >
+          {row?.returned.return == "true" ? "Returned" : "Sold"}
         </TableCell>
         <TableCell align="right">{row?.date}</TableCell>
       </TableRow>
@@ -96,7 +98,7 @@ export default function FReports() {
 
   const [FReports, setFirebaseReports] = useState<any>([]);
   const [DReports, setDatabaseReports] = useState<any>([]);
-  
+
   React.useEffect(() => {
     getReportsformfirebase();
     // getReportsformDatabase();
@@ -148,7 +150,27 @@ export default function FReports() {
             </TableHead>
             <TableBody>
               {data
+                ?.sort((a, b) => {
+                  const dateA = moment(
+                    a.date,
+                    "dddd, MMMM Do, YYYY h:mm:ss A",
+                    true
+                  );
+                  const dateB = moment(
+                    b.date,
+                    "dddd, MMMM Do, YYYY h:mm:ss A",
+                    true
+                  );
+
+                  if (!dateA.isValid() || !dateB.isValid()) {
+                    console.log("Invalid date:", a.date);
+                    return 0; // Handle invalid dates
+                  }
+
+                  return dateB.valueOf() - dateA.valueOf();
+                })
                 ?.filter((item: any) => item.email == email)
+
                 ?.map((row: any, index: any) => (
                   <Row key={index} row={row} />
                 ))}

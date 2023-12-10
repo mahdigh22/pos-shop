@@ -34,6 +34,10 @@ import { useRouter } from "next/navigation";
 import { SnackbarProvider, VariantType, useSnackbar } from "notistack";
 import React, { useContext } from "react";
 import AuthContext from "@/hooks/authContext";
+import moment from "moment";
+
+
+
 function Row(props: any) {
   const { email, token } = useContext(AuthContext);
 
@@ -43,7 +47,7 @@ function Row(props: any) {
 
   const [open, setOpen] = React.useState(false);
   const [loadingReturn, setLoadingReturn] = React.useState(false);
-  
+
   async function UpdateItem(id: any, Data: any) {
     setLoadingReturn(true);
 
@@ -202,7 +206,7 @@ export default function Return() {
         return FReports[item];
       })
     : [];
- console.log('data',data)
+  console.log("data", data);
   // useEffect(() => {
   //   if (email !== "222") {
   //     router.push("/reports");
@@ -236,8 +240,28 @@ export default function Return() {
                 </TableHead>
                 <TableBody>
                   {data
+                    ?.sort((a, b) => {
+                      const dateA = moment(
+                        a.date,
+                        "dddd, MMMM Do, YYYY h:mm:ss A",
+                        true
+                      );
+                      const dateB = moment(
+                        b.date,
+                        "dddd, MMMM Do, YYYY h:mm:ss A",
+                        true
+                      );
+
+                      if (!dateA.isValid() || !dateB.isValid()) {
+                        console.log("Invalid date:", a.date);
+                        return 0; // Handle invalid dates
+                      }
+
+                      return dateB.valueOf() - dateA.valueOf();
+                    })
                     ?.filter(
-                      (item: any) => item.email == email && item.returned.return=='false'
+                      (item: any) =>
+                        item.email == email && item.returned.return == "false"
                     )
                     ?.map((row: any, index: any) => (
                       <Row
