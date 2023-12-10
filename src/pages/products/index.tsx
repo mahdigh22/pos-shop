@@ -34,7 +34,7 @@ const style = {
   p: 2,
 };
 export default function NewItem(props: any) {
-  const { email, token,type } = useContext(AuthContext);
+  const { email, token, type } = useContext(AuthContext);
   const { enqueueSnackbar } = useSnackbar();
 
   const [OpenNew, setOpenNew] = useState<boolean>(false);
@@ -155,7 +155,10 @@ export default function NewItem(props: any) {
 
       const data2 = Object?.keys(storedValue)
         ?.map((item: any) => storedValue[item])
-        ?.filter((item: any) => item?.email == email)
+        ?.filter(
+          (item: any) =>
+            item?.email == email && `${item?.returned.return}` == "false"
+        )
         ?.map((item: any, index: any) => item?.list[index]?.code);
       if (data2.includes(code)) {
         enqueueSnackbar("This product is found in return page", {
