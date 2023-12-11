@@ -189,7 +189,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         router.push("/products");
       } else {
         // Handle the case when validation fails
-        // router.push("/");
+        router.push("/");
       }
     }
   };
