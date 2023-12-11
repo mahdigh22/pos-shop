@@ -1,5 +1,6 @@
 import {
   alpha,
+  Avatar,
   Box,
   Button,
   Card,
@@ -54,39 +55,7 @@ const style = {
   boxShadow: 24,
   p: 2,
 };
-function ccyFormat(num: number) {
-  return `${num.toFixed(2)}`;
-}
 
-function priceRow(qty: number, unit: number) {
-  return qty * unit;
-}
-
-function createRow(desc: string, qty: number, unit: number) {
-  const price = priceRow(qty, unit);
-  return { desc, qty, unit, price };
-}
-
-interface Row {
-  desc: string;
-  qty: number;
-  unit: number;
-  price: number;
-}
-
-function subtotal(items: readonly Row[]) {
-  return items.map(({ price }) => price).reduce((sum, i) => sum + i, 0);
-}
-
-const rows = [
-  createRow("Paperclips (Box)", 100, 1.15),
-  createRow("Paper (Case)", 10, 45.99),
-  createRow("Waste Basket", 2, 17.99),
-];
-
-const invoiceSubtotal = subtotal(rows);
-const invoiceTaxes = TAX_RATE * invoiceSubtotal;
-const invoiceTotal = invoiceTaxes + invoiceSubtotal;
 export default function Selling() {
   const axios = require("axios");
   const [FireList, setFireList] = useState([]);
@@ -94,7 +63,7 @@ export default function Selling() {
 
   const [Products, setProducts] = useState<any>([]);
   const [type, setType] = useState("TypeA");
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState("test");
   const [CustomerName, setCustomerName] = useState(null);
   const [Deposit, setDeposit] = useState(100);
   const [Products2, setProducts2] = useState<any>([]);
@@ -191,7 +160,6 @@ export default function Selling() {
     total: any,
     email: any
   ) {
-
     const returned = { return: "false" };
 
     set(
@@ -391,13 +359,16 @@ export default function Selling() {
                           : null;
                       }}
                     >
-                      <Typography
+                      <Avatar
+                        alt="Remy Sharp"
+                        src={row?.imgsSrc?.split(",")[0]}
+                      />
+                      {/* <Typography
                         variant="subtitle1"
                         sx={{ color: "white", textTransform: "capitalize" }}
                       >
-                        {" "}
                         {row.category}
-                      </Typography>
+                      </Typography> */}
                       <Typography sx={{ color: "white" }}>
                         {" "}
                         {row.name}

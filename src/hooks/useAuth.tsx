@@ -74,7 +74,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               : response?.data?.info?.name
           );
         }
-        setPass(pass)
+        setPass(pass);
 
         setType(response.data.type);
         setToken(validateResponse.config.params.token);
@@ -159,7 +159,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               : response?.data?.info?.name
           );
         }
-setPass(PassData)
+        setPass(PassData);
         setType(response.data.type);
         setToken(validateResponse.config.params.token);
         localStorage.setItem(
@@ -189,7 +189,7 @@ setPass(PassData)
         router.push("/products");
       } else {
         // Handle the case when validation fails
-        router.push("/");
+        // router.push("/");
       }
     }
   };
@@ -201,7 +201,7 @@ setPass(PassData)
 
   return (
     <AuthContext.Provider
-      value={{ email, token, login, logout, type, register,pass }}
+      value={{ email, token, login, logout, type, register, pass }}
     >
       {children}
     </AuthContext.Provider>

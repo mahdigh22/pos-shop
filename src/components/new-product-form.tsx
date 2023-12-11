@@ -64,13 +64,13 @@ export default function NewProductForm(props: any) {
   const [Supplier, setSupplier] = useState<any>(Data ? Data.supplier : "");
   const [Currency, setCurrency] = useState<any>(Data ? Data.currency : "$");
   const [imgsSrc, setImgsSrc] = useState<any>(Data ? Data.imgsSrc : "");
-  const [image, setImage] = useState<File | null>(null);
+  const [images, setImages] = useState<any>(null);
 
   const [Quantity, setQuantity] = useState<any>(Data ? +Data.quantity : 0);
   const [Error, setError] = useState<any>(false);
   const id = uuidv4();
   const axios = require("axios");
-
+  // console.log("imgsSrc", imgsSrc ? imgsSrc.toString() : "");
   const list = [
     {
       Code: Code,
@@ -107,47 +107,65 @@ export default function NewProductForm(props: any) {
   // };
   const handleImageChange = (e: any) => {
     if (e?.target?.files && e?.target?.files?.length > 0) {
-      const selectedFile = e?.target?.files[0];
-      setImage(selectedFile);
+      const selectedFiles = Array.from(e?.target?.files);
+      setImages(selectedFiles);
     }
   };
 
   const handleUpload = () => {
-    if (image) {
-      const storageRef = ref(storage, `images/${image.name}`);
-
-      // const imageRef = storageRef.child(`files/${image.name}`);
-
-      const uploadTask = uploadBytesResumable(storageRef, image);
-
-      console.log("image", uploadTask);
+    if (images && images.length > 0) {
       setLoading(true);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+
+      const uploadPromises = images.map((selectedFile: any) => {
+        const storageRef = ref(storage, `images/${selectedFile.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+
+        return new Promise((resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const progress = Math.round(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+              );
+              console.log(
+                `Upload is ${progress}% done for ${selectedFile.name}`
+              );
+              setProgress(progress);
+            },
+            (error) => {
+              console.error(
+                `Error during upload of ${selectedFile.name}:`,
+                error.message
+              );
+              reject(error);
+            },
+            async () => {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              console.log(
+                `File available at ${downloadURL} for ${selectedFile.name}`
+              );
+              resolve(downloadURL);
+            }
           );
-          console.log(`Upload is ${progress}% done`);
-          setProgress(progress);
-        },
-        (error) => {
-          console.error("Error during upload:", error.message);
-        },
-        async () => {
-          await getDownloadURL(uploadTask.snapshot.ref).then((downloadURLs) => {
-            setImgsSrc(downloadURLs);
-            console.log("File available at", downloadURLs);
-          });
-        }
-      );
+        });
+      });
+
+      Promise.all(uploadPromises)
+        .then((downloadURLs) => {
+          setImgsSrc(downloadURLs);
+          console.log("All files uploaded successfully");
+        })
+        .catch((error) => {
+          console.error("Error uploading files:", error.message);
+        });
     } else {
-      console.error("No image selected for upload.");
+      console.error("No images selected for upload.");
     }
   };
 
   const handleAdd = () => {
     console.log("imgsSrcimgsSrc", imgsSrc);
+    const imagesSrc = imgsSrc.toString();
 
     axios
       .post("https://shop-server-iota.vercel.app/newproduct", {
@@ -163,7 +181,7 @@ export default function NewProductForm(props: any) {
         Quantity,
         Unit,
         email,
-        imgsSrc,
+        imagesSrc,
       })
       .then(function (response: any) {
         handleClose();
@@ -178,7 +196,8 @@ export default function NewProductForm(props: any) {
   };
 
   const handleEdit = () => {
-    console.log("imgsSrcimgsSrc", imgsSrc);
+    const imagesSrc = imgsSrc.toString();
+
     axios
       .put("https://shop-server-iota.vercel.app/updateproduct", {
         // id,
@@ -193,7 +212,7 @@ export default function NewProductForm(props: any) {
         Quantity,
         Unit,
         email,
-        imgsSrc,
+        imagesSrc,
       })
       .then(function (response: any) {
         console.log(response);
@@ -365,6 +384,7 @@ export default function NewProductForm(props: any) {
                 <VisuallyHiddenInput
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={(event: any) => {
                     handleImageChange(event);
                   }}
@@ -374,7 +394,7 @@ export default function NewProductForm(props: any) {
             <LoadingButton
               size="small"
               color="primary"
-              loading={loading && progress != 100 || image == null}
+              loading={(loading && progress != 100) || images == null}
               loadingPosition="start"
               startIcon={<SaveIcon />}
               variant="outlined"
@@ -382,21 +402,28 @@ export default function NewProductForm(props: any) {
             >
               <span>Save</span>
             </LoadingButton>
-            <Typography
-              noWrap
-              sx={{
-                width: "220px",
-                color: "grey",
-                textDecoration: "underline",
-              }}
-              href={imgsSrc}
-              component="a"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {imgsSrc}
-            </Typography>
-
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              {imgsSrc ? (
+                imgsSrc?.split(",")?.map((item: any) => (
+                  <Typography
+                    noWrap
+                    sx={{
+                      width: "220px",
+                      color: "grey",
+                      textDecoration: "underline",
+                    }}
+                    href={item}
+                    component="a"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item}
+                  </Typography>
+                ))
+              ) : (
+                <></>
+              )}
+            </Box>
             {/* <Button variant="outlined" size="small" onClick={handleUpload}>
               upload
             </Button> */}

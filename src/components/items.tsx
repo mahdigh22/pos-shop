@@ -1,5 +1,6 @@
 import {
   alpha,
+  Avatar,
   Box,
   Button,
   Card,
@@ -85,6 +86,7 @@ export default function Items(props: any) {
                 <Table>
                   <TableHead sx={{ backgroundColor: "#59a96a" }}>
                     <TableRow>
+                      <TableCell />
                       <TableCell
                         sx={{
                           fontWeight: 500,
@@ -238,11 +240,13 @@ export default function Items(props: any) {
                           }
                         }}
                       >
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          sx={{ color: "#59a96a", fontWeight: 600 }}
-                        >
+                        <TableCell>
+                          <Avatar
+                            alt="Remy Sharp"
+                            src={row.imgsSrc?.split(",")[0]}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ color: "#59a96a", fontWeight: 600 }}>
                           {row.code}
                         </TableCell>
                         <TableCell align="left">{row.name}</TableCell>
