@@ -192,7 +192,7 @@ export default function NewProductSell(props: any) {
               spacing={2}
             >
               <Typography variant="subtitle1" sx={{ fontWeight: 500, mr: 1 }}>
-                Deposit:
+                Pay:
               </Typography>
               <Button
                 onClick={() => {
