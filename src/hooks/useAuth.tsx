@@ -23,6 +23,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const storedToken = await localStorage.getItem("token");
       const storedEmail = await localStorage.getItem("Email");
 
@@ -100,7 +101,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           );
         }
 
-        setIsLoading(false);
         router.push("/products");
       } else {
         // Handle the case when validation fails
@@ -108,7 +108,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       // Handle errors here
-      setIsLoading(false);
       alert("Oh wrong Email or Password!");
     }
   };
@@ -201,7 +200,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ email, token, login, logout, type, register, pass }}
+      value={{ email, token, login, logout, type, register, pass, isLoading }}
     >
       {children}
     </AuthContext.Provider>

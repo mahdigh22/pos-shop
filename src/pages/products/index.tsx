@@ -88,13 +88,14 @@ export default function NewItem(props: any) {
             ).toDate();
             return parsedDate.getTime() > twentyFourHoursFromNow.getTime();
           });
+          console.log("latestBackup",latestBackup);
 
         if (latestBackupwithemail.length == 0) {
-          console.log("fssff");
+          console.log("fssff",latestBackup);
         }
         // Check if there is no recent backup
-        else if (!latestBackup || latestBackup.length === 0) {
-          console.log("No recent backup found within the last 24 hours.");
+        else if ( latestBackup.length == 0) {
+          console.log(" backup found within the last 24 hours.");
           return;
         }
       }
@@ -152,7 +153,7 @@ export default function NewItem(props: any) {
         const data = snapshot.val();
         storedValue = data; // Assign the value to the variable
       });
-console.log('stored',storedValue)
+      console.log("stored", storedValue);
       const data2 = Object?.keys(storedValue)
         ?.map((item: any) => storedValue[item])
         ?.filter(
