@@ -36,8 +36,6 @@ import React, { useContext } from "react";
 import AuthContext from "@/hooks/authContext";
 import moment from "moment";
 
-
-
 function Row(props: any) {
   const { email, token } = useContext(AuthContext);
 
@@ -173,7 +171,7 @@ function Row(props: any) {
 export default function Return() {
   const axios = require("axios");
   const router = useRouter();
-  const { email, token } = useContext(AuthContext);
+  const { email, token, type, user } = useContext(AuthContext);
 
   const [FReports, setFirebaseReports] = useState<any>([]);
   const [DReports, setDatabaseReports] = useState<any>([]);
@@ -259,10 +257,19 @@ export default function Return() {
 
                       return dateB.valueOf() - dateA.valueOf();
                     })
-                    ?.filter(
-                      (item: any) =>
-                        item.email == email && item.returned.return == "false"
-                    )
+                    ?.filter((item: any) => {
+                      if (type == "admin") {
+                        return (
+                          item.email == email && item.returned.return == "false"
+                        );
+                      }
+                      return (
+                        item.email == email &&
+                        item.user == user &&
+                        item.returned.return == "false"
+                      );
+                    })
+
                     ?.map((row: any, index: any) => (
                       <Row
                         key={index}

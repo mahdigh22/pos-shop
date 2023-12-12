@@ -94,7 +94,7 @@ function Row(props: any) {
 
 export default function FReports() {
   const axios = require("axios");
-  const { email, token } = useContext(AuthContext);
+  const { email, token, user, type } = useContext(AuthContext);
 
   const [FReports, setFirebaseReports] = useState<any>([]);
   const [DReports, setDatabaseReports] = useState<any>([]);
@@ -117,7 +117,6 @@ export default function FReports() {
     const starCountRef = ref(db);
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("data", data);
       setFirebaseReports(data);
     });
   }
@@ -126,6 +125,7 @@ export default function FReports() {
         return FReports[item];
       })
     : [];
+  console.log("data", data);
 
   return (
     <Grid container spacing={1} sx={{ p: 1 }}>
@@ -169,7 +169,12 @@ export default function FReports() {
 
                   return dateB.valueOf() - dateA.valueOf();
                 })
-                ?.filter((item: any) => item.email == email)
+                ?.filter((item: any) => {
+                  if (type == "admin") {
+                    return item.email == email;
+                  }
+                  return item.email == email && item.user == user;
+                })
 
                 ?.map((row: any, index: any) => (
                   <Row key={index} row={row} />
