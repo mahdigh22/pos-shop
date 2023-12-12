@@ -17,6 +17,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<any>(null);
   const [pass, setPass] = useState<any>(null);
   const [type, setType] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const axios = require("axios");
   const router = useRouter();
@@ -65,6 +66,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       );
 
       if (validateResponse) {
+        setUser(email)
         if (response.data.type == "admin") {
           setEmail(email === "222" || email === "111" ? "" : email);
         } else {
@@ -200,7 +202,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ email, token, login, logout, type, register, pass, isLoading }}
+      value={{ email, token, login, logout, type, register, pass, isLoading,user }}
     >
       {children}
     </AuthContext.Provider>

@@ -59,7 +59,7 @@ const style = {
 export default function Selling() {
   const axios = require("axios");
   const [FireList, setFireList] = useState([]);
-  const { email, token } = useContext(AuthContext);
+  const { email, token, user } = useContext(AuthContext);
 
   const [Products, setProducts] = useState<any>([]);
   const [type, setType] = useState("TypeA");
@@ -75,7 +75,7 @@ export default function Selling() {
   const [OpenSell, setOpenSell] = useState<boolean>(false);
   const [Validation, setValidation] = useState<boolean>(true);
   const router = useRouter();
-
+  console.log("user", user);
   const totalIncome = () => {
     // console.log("ggg", Products2);
     let total = 0;
@@ -176,6 +176,7 @@ export default function Selling() {
         total,
         id,
         email,
+        user,
         returned,
       }
     );

@@ -23,7 +23,12 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
+import { uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref as databaseRef } from "firebase/database";
+import { ref as storageRef, getStorage } from "firebase/storage";
+
+import { getDatabase, onValue } from "firebase/database";
+import firebaseconf from "@/firebase";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -46,11 +51,13 @@ export default function Setting() {
   const [imgsSrc, setImgsSrc] = useState<any>("");
   const [image, setImage] = useState<File | null>(null);
   const [progress, setProgress] = useState<any>(0);
+  const [FReports, setFirebaseReports] = useState<any>([]);
 
   const axios = require("axios");
-  const { email, token, type, pass } = useContext(AuthContext);
+  const { email, token, type, pass, user } = useContext(AuthContext);
   useEffect(() => {
     handleUpload();
+    getReportsformfirebase();
   }, [image]);
   const handleImageChange = (e: any) => {
     if (e?.target?.files && e?.target?.files?.length > 0) {
@@ -58,13 +65,36 @@ export default function Setting() {
       setImage(selectedFile);
     }
   };
+  async function getReportsformfirebase() {
+    const db = getDatabase(firebaseconf);
+    const starCountRef = databaseRef(db);
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      setFirebaseReports(data);
+    });
+  }
+
+  // console.log("dataa", data);
+  const returnTotal = (user: any) => {
+    let total = 0;
+    const data = FReports
+      ? Object?.keys(FReports)
+          // ?.filter((item: any) => item.user == "test")
+          ?.map((item: any) => {
+            return FReports[item];
+          })
+          ?.filter((item: any) => item.user == user)
+          ?.map((item: any) => (total = total + item.total))
+      : [];
+    return total;
+  };
   const handleUpload = () => {
     if (image) {
-      const storageRef = ref(storage, `images/${image.name}`);
+      const storageRef1 = storageRef(storage, `images/${image.name}`);
 
       // const imageRef = storageRef.child(`files/${image.name}`);
 
-      const uploadTask = uploadBytesResumable(storageRef, image);
+      const uploadTask = uploadBytesResumable(storageRef1, image);
 
       console.log("image", uploadTask);
       setLoading(true);
@@ -151,7 +181,7 @@ export default function Setting() {
 
   return (
     <Grid container spacing={2} sx={{ p: 2 }}>
-      <Grid item xs={6}>
+      <Grid item xs={5}>
         {" "}
         <Card
           sx={{ p: 1, cursor: "pointer" }}
@@ -178,7 +208,7 @@ export default function Setting() {
           Users
         </Card>
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={7}>
         {settingsType == "AddUser" ? (
           <Card sx={{ display: "flex", flexDirection: "column", gap: 2, p: 1 }}>
             <Typography> Add User</Typography>
@@ -238,6 +268,7 @@ export default function Setting() {
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Number</TableCell>
+                    <TableCell>selling</TableCell>
                     <TableCell>Password</TableCell>
                     <TableCell />
                   </TableRow>
@@ -250,6 +281,7 @@ export default function Setting() {
                     >
                       <TableCell>{row.name}</TableCell>
                       <TableCell>{row.number}</TableCell>
+                      <TableCell>{returnTotal(row.name)}</TableCell>
                       <TableCell>{row.pass}</TableCell>
                       <TableCell>
                         <Button variant="contained">Edit</Button>
@@ -318,7 +350,7 @@ export default function Setting() {
                 />
                 <Button
                   variant="contained"
-                  sx={{width:'100px'}}
+                  sx={{ width: "100px" }}
                   onClick={handleAdd}
                   disabled={loading}
                 >

@@ -10,6 +10,7 @@ interface AuthContextProps {
   login?: any;
   register?: any;
   type?: any;
+  user?: any;
   pass?: any;
   logout?: () => void;
 }
