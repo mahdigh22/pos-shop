@@ -26,6 +26,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { ref as databaseRef } from "firebase/database";
 import { ref as storageRef, getStorage } from "firebase/storage";
+import moment from "moment";
 
 import { getDatabase, onValue } from "firebase/database";
 import firebaseconf from "@/firebase";
@@ -74,9 +75,10 @@ export default function Setting() {
     });
   }
 
-  // console.log("dataa", data);
-  const returnTotal = (user: any) => {
+  const returnTotal = (user: any, day: any) => {
     let total = 0;
+    let total2 = 0;
+
     const data = FReports
       ? Object?.keys(FReports)
           // ?.filter((item: any) => item.user == "test")
@@ -86,7 +88,23 @@ export default function Setting() {
           ?.filter((item: any) => item.user == user)
           ?.map((item: any) => (total = total + item.total))
       : [];
-    return total;
+    const today = moment().startOf("day");
+    const data2 = FReports
+      ? Object?.keys(FReports)
+          ?.map((item: any) => FReports[item])
+          ?.filter((item: any) => {
+            const parsedDate = moment(
+              item?.date,
+              "dddd, MMMM Do, YYYY h:mm:ss A"
+            ).startOf("day"); // Extract the date part and set the time to the start of the day
+            return moment(parsedDate).isSame(today, "day");
+          })
+          ?.filter((item: any) => item.user == user)
+          ?.map((item: any) => (total2 = total2 + item.total))
+      : [];
+    console.log("dataa", data2);
+
+    return day ? total2 : total;
   };
   const handleUpload = () => {
     if (image) {
@@ -267,7 +285,8 @@ export default function Setting() {
                 <TableHead sx={{ backgroundColor: "divider" }}>
                   <TableRow>
                     <TableCell>Name</TableCell>
-                    <TableCell>Number</TableCell>
+                    <TableCell>Number</TableCell>{" "}
+                    <TableCell>selling(Today)</TableCell>
                     <TableCell>selling</TableCell>
                     <TableCell>Password</TableCell>
                     <TableCell />
@@ -281,7 +300,8 @@ export default function Setting() {
                     >
                       <TableCell>{row.name}</TableCell>
                       <TableCell>{row.number}</TableCell>
-                      <TableCell>{returnTotal(row.name)}</TableCell>
+                      <TableCell>{returnTotal(row.name, true)}</TableCell>
+                      <TableCell>{returnTotal(row.name, false)}</TableCell>
                       <TableCell>{row.pass}</TableCell>
                       <TableCell>
                         <Button variant="contained">Edit</Button>
