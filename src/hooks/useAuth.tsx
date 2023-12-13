@@ -27,14 +27,23 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       const storedToken = await localStorage.getItem("token");
       const storedEmail = await localStorage.getItem("Email");
+      const storedType = await localStorage.getItem("type");
+      const storedUser = await localStorage.getItem("user");
 
-      if (storedToken && storedEmail) {
+      if (
+        storedToken != null &&
+        storedEmail != null &&
+        storedType != null &&
+        storedUser != null
+      ) {
         // Data found in localStorage, set authentication state
 
-        setEmail(storedEmail);
-        setToken(storedToken);
+        setEmail(storedEmail.replace(/^"(.*)"$/, "$1"));
+        setUser(storedUser.replace(/^"(.*)"$/, "$1"));
+        setToken(storedToken.replace(/^"(.*)"$/, "$1"));
+        setType(storedType.replace(/^"(.*)"$/, "$1"));
       }
-      if (email == null && token == null) {
+      if (storedEmail == null || storedToken == null) {
         logout();
       }
       setIsLoading(false);
@@ -66,7 +75,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       );
 
       if (validateResponse) {
-        setUser(email)
+        setUser(email);
         if (response.data.type == "admin") {
           setEmail(email === "222" || email === "111" ? "" : email);
         } else {
@@ -81,6 +90,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         setType(response.data.type);
         setToken(validateResponse.config.params.token);
+        localStorage.setItem("user", JSON.stringify(email));
         localStorage.setItem(
           "token",
           JSON.stringify(validateResponse.config.params.token)
@@ -113,6 +123,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       alert("Oh wrong Email or Password!");
     }
   };
+
+  const remove = async () => {
+    setToken(null);
+    setEmail(null);
+  };
+
   const register = async (userData: any) => {
     const { emailData, PassData, id, Name, Number } = userData;
 
@@ -199,10 +215,24 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(null);
     router.push("/");
   };
-
+  if (isLoading) {
+    // Return a loading page or spinner while data is being fetched
+    return <div>Loading...</div>;
+  }
   return (
     <AuthContext.Provider
-      value={{ email, token, login, logout, type, register, pass, isLoading,user }}
+      value={{
+        email,
+        token,
+        login,
+        logout,
+        type,
+        register,
+        pass,
+        isLoading,
+        user,
+        remove,
+      }}
     >
       {children}
     </AuthContext.Provider>

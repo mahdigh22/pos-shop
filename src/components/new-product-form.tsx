@@ -63,7 +63,7 @@ export default function NewProductForm(props: any) {
   const [Unit, setUnit] = useState<any>(Data ? +Data.unit : 1);
   const [Supplier, setSupplier] = useState<any>(Data ? Data.supplier : "");
   const [Currency, setCurrency] = useState<any>(Data ? Data.currency : "$");
-  const [imgsSrc, setImgsSrc] = useState<any>(Data ? Data.imgsSrc : "");
+  const [imgsSrc, setImgsSrc] = useState<any>(Data ? Data.imgsSrc : []);
   const [images, setImages] = useState<any>(null);
 
   const [Quantity, setQuantity] = useState<any>(Data ? +Data.quantity : 0);
@@ -162,9 +162,9 @@ export default function NewProductForm(props: any) {
       console.error("No images selected for upload.");
     }
   };
+  console.log("imgsSrcimgsSrc", imgsSrc);
 
   const handleAdd = () => {
-    console.log("imgsSrcimgsSrc", imgsSrc);
     const imagesSrc = imgsSrc.toString();
 
     axios
@@ -403,7 +403,7 @@ export default function NewProductForm(props: any) {
               <span>Save</span>
             </LoadingButton>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              {imgsSrc ? (
+              {imgsSrc?.length > 1 ? (
                 imgsSrc?.split(",")?.map((item: any) => (
                   <Typography
                     noWrap
@@ -421,7 +421,20 @@ export default function NewProductForm(props: any) {
                   </Typography>
                 ))
               ) : (
-                <></>
+                <Typography
+                  noWrap
+                  sx={{
+                    width: "220px",
+                    color: "grey",
+                    textDecoration: "underline",
+                  }}
+                  href={imgsSrc}
+                  component="a"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {imgsSrc}
+                </Typography>
               )}
             </Box>
             {/* <Button variant="outlined" size="small" onClick={handleUpload}>

@@ -36,7 +36,7 @@ const style = {
 export default function NewItem(props: any) {
   const { email, token, type } = useContext(AuthContext);
   const { enqueueSnackbar } = useSnackbar();
-
+console.log('type',type)
   const [OpenNew, setOpenNew] = useState<boolean>(false);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -88,13 +88,13 @@ export default function NewItem(props: any) {
             ).toDate();
             return parsedDate.getTime() > twentyFourHoursFromNow.getTime();
           });
-          console.log("latestBackup",latestBackup);
+        console.log("latestBackup", latestBackup);
 
         if (latestBackupwithemail.length == 0) {
-          console.log("fssff",latestBackup);
+          console.log("fssff", latestBackup);
         }
         // Check if there is no recent backup
-        else if ( latestBackup.length == 0) {
+        else if (latestBackup.length == 0) {
           console.log(" backup found within the last 24 hours.");
           return;
         }
@@ -237,7 +237,8 @@ export default function NewItem(props: any) {
   async function getProducts() {
     try {
       setLoading(true);
-
+      console.log("token", token);
+      console.log("email", email);
       const response = await axios.get(
         "https://shop-server-iota.vercel.app/products",
         {
@@ -257,9 +258,7 @@ export default function NewItem(props: any) {
     }
   }
   useEffect(() => {
-    setTimeout(() => {
-      getProducts();
-    }, 500);
+    getProducts();
   }, []);
 
   return (
@@ -335,7 +334,7 @@ export default function NewItem(props: any) {
         </Grid>
         <Grid item xs={12}>
           <Items
-            Products={Products}
+            Products={Products ? Products : []}
             setData={setData}
             DeleteItem={DeleteItem}
             loading={loading}

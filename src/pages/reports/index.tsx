@@ -98,7 +98,8 @@ export default function FReports() {
 
   const [FReports, setFirebaseReports] = useState<any>([]);
   const [DReports, setDatabaseReports] = useState<any>([]);
-
+  console.log("email", email);
+  console.log("user", user);
   React.useEffect(() => {
     getReportsformfirebase();
     // getReportsformDatabase();

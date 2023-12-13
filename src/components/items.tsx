@@ -219,7 +219,7 @@ export default function Items(props: any) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {Products.filter(
+                    {Products?.filter(
                       (item: any, index: any) => index < rowsPerPage
                     )?.map((row: any, index: any) => (
                       <TableRow

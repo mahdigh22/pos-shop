@@ -53,6 +53,7 @@ export default function Navbar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  console.log("type22", type);
 
   return (
     <>

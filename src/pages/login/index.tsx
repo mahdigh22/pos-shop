@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Login() {
-  const { login } = useContext(AuthContext) || {};
+  const { login, remove } = useContext(AuthContext) || {};
 
   const [showPassword, setShowPassword] = useState(false);
   const [Loading, setLoading] = useState(false);
@@ -38,6 +38,8 @@ export default function Login() {
 
   useEffect(() => {
     localStorage.removeItem("token");
+    localStorage.removeItem("Email");
+    remove();
   }, []);
   async function CheckIfValid() {
     await login({ email: Email, pass: Pass });

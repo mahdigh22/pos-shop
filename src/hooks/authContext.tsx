@@ -13,6 +13,7 @@ interface AuthContextProps {
   user?: any;
   pass?: any;
   logout?: () => void;
+  remove?: () => void;
 }
 
 const AuthContext = createContext<any | undefined>(undefined);
