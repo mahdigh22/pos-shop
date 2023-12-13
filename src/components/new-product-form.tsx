@@ -47,30 +47,30 @@ export default function NewProductForm(props: any) {
   console.log("data", Data);
   const { email, token } = useContext(AuthContext);
 
-  const [Code, setCode] = useState<any>(Data ? Data.code : 0);
+  const [Code, setCode] = useState<any>(Data ? Data.code : null);
   const [Name, setName] = useState<any>(Data ? Data.name : "");
-  const [Price, setPrice] = useState<any>(Data ? +Data.price : 0);
+  const [Price, setPrice] = useState<any>(Data ? +Data.price : null);
   const [loading, setLoading] = useState<any>(false);
   const [progress, setProgress] = useState<any>(0);
 
   const [SellPrice1, setSellPrice1] = useState<any>(
-    Data ? +Data.sellpricea : 0
+    Data ? +Data.sellpricea : null
   );
   const [SellPrice2, setSellPrice2] = useState<any>(
-    Data ? +Data.sellpriceb : 0
+    Data ? +Data.sellpriceb : null
   );
   const [Category, setCategory] = useState<any>(Data ? Data.category : "");
   const [Unit, setUnit] = useState<any>(Data ? +Data.unit : 1);
   const [Supplier, setSupplier] = useState<any>(Data ? Data.supplier : "");
-  const [Currency, setCurrency] = useState<any>(Data ? Data.currency : "$");
+  const [Currency, setCurrency] = useState<any>(Data ? Data.currency : "usd");
   const [imgsSrc, setImgsSrc] = useState<any>(Data ? Data.imgsSrc : []);
   const [images, setImages] = useState<any>(null);
 
-  const [Quantity, setQuantity] = useState<any>(Data ? +Data.quantity : 0);
+  const [Quantity, setQuantity] = useState<any>(Data ? +Data.quantity : null);
   const [Error, setError] = useState<any>(false);
   const id = uuidv4();
   const axios = require("axios");
-  // console.log("imgsSrc", imgsSrc ? imgsSrc.toString() : "");
+  console.log("imgsSrcllllllll", imgsSrc?.length);
   const list = [
     {
       Code: Code,
@@ -404,22 +404,25 @@ export default function NewProductForm(props: any) {
             </LoadingButton>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               {imgsSrc?.length > 1 ? (
-                imgsSrc?.split(",")?.map((item: any) => (
-                  <Typography
-                    noWrap
-                    sx={{
-                      width: "220px",
-                      color: "grey",
-                      textDecoration: "underline",
-                    }}
-                    href={item}
-                    component="a"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {item}
-                  </Typography>
-                ))
+                imgsSrc
+                  ?.toString()
+                  ?.split(",")
+                  ?.map((item: any) => (
+                    <Typography
+                      noWrap
+                      sx={{
+                        width: "220px",
+                        color: "grey",
+                        textDecoration: "underline",
+                      }}
+                      href={item}
+                      component="a"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item}
+                    </Typography>
+                  ))
               ) : (
                 <Typography
                   noWrap

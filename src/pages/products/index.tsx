@@ -277,7 +277,7 @@ console.log('type',type)
             Products={Products}
             getProducts={getProducts}
             isEdit={false}
-            Data={[]}
+            // Data={[]}
           />
         </Box>
       </Modal>
