@@ -1,5 +1,3 @@
-
-
 import AuthContext from "@/hooks/authContext";
 import {
   List,
@@ -23,7 +21,7 @@ import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useState, useEffect,useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 
 export default function NewProductSell(props: any) {
   const {
@@ -35,14 +33,13 @@ export default function NewProductSell(props: any) {
     handleClose,
     setCustomerName,
     CustomerName,
+    currency,
   } = props;
   const axios = require("axios");
   const [Customers, setCustomers] = useState([]);
   const [paymentType, setPaymentType] = useState("Cash");
 
-  const { email, token } = useContext(AuthContext
-    );
-
+  const { email, token } = useContext(AuthContext);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if ((event.target as HTMLInputElement).value == "Cash") {
@@ -173,7 +170,7 @@ export default function NewProductSell(props: any) {
                       {value.sellpricea
                         ? value.sellpricea * value.unit
                         : value.sellpriceb * value.unit}{" "}
-                      {value.currency == "usd" ? "$" : "L.L"}
+                      {currency == "usd" ? "$" : "L.L"}
                     </Typography>
                   </Box>
                 </Stack>

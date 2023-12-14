@@ -12,8 +12,10 @@ interface AuthContextProps {
   type?: any;
   user?: any;
   pass?: any;
+  lbpValue?: any;
   logout?: () => void;
   remove?: () => void;
+  ChangeCurrency?: () => void;
 }
 
 const AuthContext = createContext<any | undefined>(undefined);

@@ -18,6 +18,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [pass, setPass] = useState<any>(null);
   const [type, setType] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
+  const [lbpValue, setLbpValue] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const axios = require("axios");
   const router = useRouter();
@@ -29,12 +30,14 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const storedEmail = await localStorage.getItem("Email");
       const storedType = await localStorage.getItem("type");
       const storedUser = await localStorage.getItem("user");
+      const storedCurrency = await localStorage.getItem("currency");
 
       if (
         storedToken != null &&
         storedEmail != null &&
         storedType != null &&
-        storedUser != null
+        storedUser != null &&
+        storedCurrency != null
       ) {
         // Data found in localStorage, set authentication state
 
@@ -42,6 +45,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(storedUser.replace(/^"(.*)"$/, "$1"));
         setToken(storedToken.replace(/^"(.*)"$/, "$1"));
         setType(storedType.replace(/^"(.*)"$/, "$1"));
+        setLbpValue(+storedCurrency.replace(/^"(.*)"$/, "$1"));
       }
       if (storedEmail == null || storedToken == null) {
         logout();
@@ -129,6 +133,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setEmail(null);
   };
 
+  const ChangeCurrency = async (value: any) => {
+    setLbpValue(+value);
+    localStorage.setItem("currency", JSON.stringify(value));
+  };
   const register = async (userData: any) => {
     const { emailData, PassData, id, Name, Number } = userData;
 
@@ -232,6 +240,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isLoading,
         user,
         remove,
+        ChangeCurrency,
+        lbpValue,
       }}
     >
       {children}

@@ -43,6 +43,8 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 export default function Setting() {
+  const { ChangeCurrency } = useContext(AuthContext);
+
   const [name, setName] = useState<any>("");
   const [passUser, setPassUser] = useState<any>("");
   const [settingsType, setSettingsType] = useState<any>("");
@@ -52,6 +54,7 @@ export default function Setting() {
   const [imgsSrc, setImgsSrc] = useState<any>("");
   const [image, setImage] = useState<File | null>(null);
   const [progress, setProgress] = useState<any>(0);
+  const [currencyValue, setCurrencyValue] = useState<any>(0);
   const [FReports, setFirebaseReports] = useState<any>([]);
 
   const axios = require("axios");
@@ -202,6 +205,14 @@ export default function Setting() {
       <Grid item xs={5}>
         {" "}
         <Card
+          sx={{ p: 1, cursor: "pointer",mb:2 }}
+          onClick={() => {
+            setSettingsType("currency");
+          }}
+        >
+          Currency Settings{" "}
+        </Card>
+        <Card
           sx={{ p: 1, cursor: "pointer" }}
           onClick={() => {
             setSettingsType("AdminSettings");
@@ -270,48 +281,74 @@ export default function Setting() {
               </Button>
             </Stack>
           </Card>
+        ) : settingsType == "currency" ? (
+          <Card sx={{ display: "flex", flexDirection: "column", gap: 2, p: 1 }}>
+            <Typography> Set Currency</Typography>
+            <TextField
+              label="Currency"
+              variant="outlined"
+              fullWidth
+              size="small"
+              value={currencyValue}
+              onChange={(e) => {
+                setCurrencyValue(e.target.value);
+              }}
+            />
+
+            <Stack direction="row">
+              <Button
+                variant="contained"
+                onClick={() => {
+                  ChangeCurrency(currencyValue);
+                }}
+                disabled={loading}
+              >
+                Add Currency
+              </Button>
+            </Stack>
+          </Card>
         ) : settingsType == "Users" ? (
           <Card
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              p: 0.1,
-              boxShadow: "0px 0px 0px 0px !important",
-            }}
-          >
-            <TableContainer component={Paper}>
-              <Table aria-label="simple table">
-                <TableHead sx={{ backgroundColor: "divider" }}>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Number</TableCell>{" "}
-                    <TableCell>selling(Today)</TableCell>
-                    <TableCell>selling</TableCell>
-                    <TableCell>Password</TableCell>
-                    <TableCell />
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            p: 0.1,
+            boxShadow: "0px 0px 0px 0px !important",
+          }}
+        >
+          <TableContainer component={Paper}>
+            <Table aria-label="simple table">
+              <TableHead sx={{ backgroundColor: "divider" }}>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Number</TableCell>{" "}
+                  <TableCell>selling(Today)</TableCell>
+                  <TableCell>selling</TableCell>
+                  <TableCell>Password</TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row: any) => (
+                  <TableRow
+                    key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell>{row.number}</TableCell>
+                    <TableCell>{returnTotal(row.name, true)}</TableCell>
+                    <TableCell>{returnTotal(row.name, false)}</TableCell>
+                    <TableCell>{row.pass}</TableCell>
+                    <TableCell>
+                      <Button variant="contained">Edit</Button>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row: any) => (
-                    <TableRow
-                      key={row.name}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell>{row.name}</TableCell>
-                      <TableCell>{row.number}</TableCell>
-                      <TableCell>{returnTotal(row.name, true)}</TableCell>
-                      <TableCell>{returnTotal(row.name, false)}</TableCell>
-                      <TableCell>{row.pass}</TableCell>
-                      <TableCell>
-                        <Button variant="contained">Edit</Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Card>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Card>
         ) : (
           <Card sx={{ display: "flex", flexDirection: "column", gap: 2, p: 1 }}>
             <Stack direction="row" spacing={2}>

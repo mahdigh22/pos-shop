@@ -59,10 +59,11 @@ const style = {
 export default function Selling() {
   const axios = require("axios");
   const [FireList, setFireList] = useState([]);
-  const { email, token, user } = useContext(AuthContext);
-
+  const { email, token, user, lbpValue } = useContext(AuthContext);
+  console.log("lbp", lbpValue);
   const [Products, setProducts] = useState<any>([]);
   const [type, setType] = useState("TypeA");
+  const [currency, setCurrency] = useState("usd");
   const [category, setCategory] = useState("test");
   const [CustomerName, setCustomerName] = useState(null);
   const [Deposit, setDeposit] = useState(100);
@@ -82,8 +83,12 @@ export default function Selling() {
     for (var i = 0; i < Products2.length; i++) {
       const test =
         type == "TypeA"
-          ? +Products2[i].sellpricea * +Products2[i].unit
-          : +Products2[i].sellpriceb * +Products2[i].unit;
+          ? +Products2[i].sellpricea *
+            +Products2[i].unit *
+            (currency == "usd" ? 1 : lbpValue)
+          : +Products2[i].sellpriceb *
+            +Products2[i].unit *
+            (currency == "usd" ? 1 : lbpValue);
       total += test;
     }
 
@@ -97,7 +102,9 @@ export default function Selling() {
       const DepositAmountt =
         paymentType == "Cash"
           ? 0
-          : totalIncome() - (totalIncome() * Deposit) / 100;
+          : totalIncome() / (currency == "usd" ? 1 : lbpValue) -
+            ((totalIncome() / (currency == "usd" ? 1 : lbpValue)) * Deposit) /
+              100;
 
       const total = totalIncome();
       const d: any = new Date();
@@ -117,8 +124,14 @@ export default function Selling() {
       unit: +item.unit,
       currency: item.currency,
       quantity: +item.quantity - +item.unit,
-      sellpricea: type == "TypeA" ? item.sellpricea : 0,
-      sellpriceb: type == "TypeB" ? item.sellpriceb : 0,
+      sellpricea:
+        type == "TypeA"
+          ? item.sellpricea * (currency == "usd" ? 1 : lbpValue)
+          : 0,
+      sellpriceb:
+        type == "TypeB"
+          ? item.sellpriceb * (currency == "usd" ? 1 : lbpValue)
+          : 0,
     };
   });
   const list2 = Products2.map((item: any) => {
@@ -174,6 +187,8 @@ export default function Selling() {
         CustomerName,
         deposit,
         total,
+        currency,
+        lbpValue,
         id,
         email,
         user,
@@ -258,6 +273,9 @@ export default function Selling() {
   const handleChange = (event: SelectChangeEvent) => {
     setType(event.target.value as string);
   };
+  const handleChangeCurrency = (event: SelectChangeEvent) => {
+    setCurrency(event.target.value as string);
+  };
   const joinedArray: any = [];
   const seenCategories: any = {};
 
@@ -307,6 +325,7 @@ export default function Selling() {
             push={Push}
             setCustomerName={setCustomerName}
             CustomerName={CustomerName}
+            currency={currency}
             handleClose={() => {
               setOpenSell(false);
             }}
@@ -400,7 +419,7 @@ export default function Selling() {
                 gap: 1,
               }}
             >
-              <Typography sx={{ fontWeight: 600 }}>Price type: </Typography>
+              <Typography sx={{ fontWeight: 600 }}>Price: </Typography>
               <FormControl sx={{ width: "130px" }}>
                 <InputLabel id="demo-simple-select-label">Type</InputLabel>
                 <Select
@@ -416,12 +435,35 @@ export default function Selling() {
                 </Select>
               </FormControl>{" "}
             </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <Typography sx={{ fontWeight: 600 }}>Currency: </Typography>
+              <FormControl sx={{ width: "120px" }}>
+                <InputLabel id="demo-simple-select-label">Currency</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={currency}
+                  label="Currency"
+                  size="small"
+                  onChange={handleChangeCurrency}
+                >
+                  <MenuItem value={"usd"}>USD</MenuItem>
+                  <MenuItem value={"lbp"}>LBP</MenuItem>
+                </Select>
+              </FormControl>{" "}
+            </Box>
             <TextField
               id="outlined-basic"
               label="Search using code "
               variant="outlined"
               size="small"
-              sx={{ mt: 1, mb: 1, width: "50%" }}
+              sx={{ mt: 1, mb: 1, width: "40%" }}
               onKeyDown={(event: any) => {
                 if (event.keyCode === 13) {
                   getItemsSearch(event.target.value);
@@ -474,12 +516,20 @@ export default function Selling() {
                             />
                           </TableCell>
                           <TableCell align="left">
-                            {type == "TypeA" ? row.sellpricea : row.sellpriceb}
+                            {type == "TypeA"
+                              ? row.sellpricea *
+                                (currency == "usd" ? 1 : lbpValue)
+                              : row.sellpriceb *
+                                (currency == "usd" ? 1 : lbpValue)}
                           </TableCell>
                           <TableCell align="left">
                             {type == "TypeA"
-                              ? row.sellpricea * +row?.unit
-                              : row.sellpriceb * +row?.unit}
+                              ? row.sellpricea *
+                                +row?.unit *
+                                (currency == "usd" ? 1 : lbpValue)
+                              : row.sellpriceb *
+                                +row?.unit *
+                                (currency == "usd" ? 1 : lbpValue)}
                           </TableCell>
                           <TableCell align="right">
                             <Button
@@ -510,7 +560,7 @@ export default function Selling() {
                             colSpan={1}
                             sx={{ fontWeight: 600, fontSize: "15px" }}
                           >
-                            {totalIncome()}
+                            {totalIncome()} {currency}
                             {/* {ccyFormat(invoiceSubtotal)} */}
                           </TableCell>
                           <TableCell align="right">

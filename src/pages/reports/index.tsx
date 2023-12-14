@@ -31,11 +31,15 @@ function Row(props: any) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
-          {row?.id}
-        </TableCell>
+        <TableCell>{row?.id}</TableCell>
         <TableCell>{row?.CustomerName}</TableCell>
         <TableCell>{row?.total}</TableCell>
+        <TableCell>{row?.currency}</TableCell>
+        {row?.currency == "lbp" ? (
+          <TableCell>{row?.lbpValue}</TableCell>
+        ) : (
+          <TableCell />
+        )}
         <TableCell>{row?.deposit}</TableCell>
         <TableCell
           sx={{ color: row?.returned.return == "true" ? "red" : "#59a96a" }}
@@ -78,7 +82,8 @@ function Row(props: any) {
                         {(data.sellpricea == 0
                           ? data.sellpriceb
                           : data.sellpricea) * data.unit}
-                        {data.currency}
+                        &nbsp;
+                        {row.currency}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -142,6 +147,8 @@ export default function FReports() {
                 <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Customer Name</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Total</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Currency</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>CurrencyValue</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Deposit</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600 }}>
