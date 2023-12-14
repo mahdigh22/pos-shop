@@ -43,7 +43,7 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 export default function Setting() {
-  const { ChangeCurrency } = useContext(AuthContext);
+  const { ChangeCurrency,lbpValue } = useContext(AuthContext);
 
   const [name, setName] = useState<any>("");
   const [passUser, setPassUser] = useState<any>("");
@@ -54,7 +54,7 @@ export default function Setting() {
   const [imgsSrc, setImgsSrc] = useState<any>("");
   const [image, setImage] = useState<File | null>(null);
   const [progress, setProgress] = useState<any>(0);
-  const [currencyValue, setCurrencyValue] = useState<any>(0);
+  const [currencyValue, setCurrencyValue] = useState<any>(lbpValue?lbpValue:0);
   const [FReports, setFirebaseReports] = useState<any>([]);
 
   const axios = require("axios");
