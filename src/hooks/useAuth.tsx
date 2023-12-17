@@ -18,7 +18,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [pass, setPass] = useState<any>(null);
   const [type, setType] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
-  const [lbpValue, setLbpValue] = useState<any>(null);
+  const [lbpValue, setLbpValue] = useState<any>(100000);
   const [isLoading, setIsLoading] = useState(true);
   const axios = require("axios");
   const router = useRouter();
