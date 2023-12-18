@@ -393,10 +393,11 @@ export default function Setting() {
                   variant="outlined"
                   fullWidth
                   size="small"
-                  value={email}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                  }}
+                  disabled
+                  value={user}
+                  // onChange={(e) => {
+                  //   setName(e.target.value);
+                  // }}
                 />
                 <TextField
                   label="Password"

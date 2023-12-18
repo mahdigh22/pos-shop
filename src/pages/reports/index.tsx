@@ -21,7 +21,7 @@ function Row(props: any) {
   console.log("row", row);
   return (
     <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+      <TableRow >
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -49,13 +49,13 @@ function Row(props: any) {
         <TableCell align="right">{row?.date}</TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
                 History
               </Typography>
-              <Table size="small" aria-label="purchases">
+              <Table >
                 <TableHead>
                   <TableRow>
                     <TableCell>code</TableCell>
@@ -68,7 +68,7 @@ function Row(props: any) {
                 <TableBody>
                   {row?.list?.map((data: any, index: any) => (
                     <TableRow key={index}>
-                      <TableCell component="th" scope="row">
+                      <TableCell >
                         {data.code}
                       </TableCell>
                       <TableCell>{data.name}</TableCell>
