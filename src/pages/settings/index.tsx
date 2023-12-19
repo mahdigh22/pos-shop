@@ -2,10 +2,13 @@ import {
   Box,
   Button,
   Card,
+  Divider,
   Grid,
+  Modal,
   Stack,
   TextField,
   Typography,
+  alpha,
   styled,
 } from "@mui/material";
 import React, { useContext, useEffect } from "react";
@@ -42,19 +45,36 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  maxWidth: 500,
+  bgcolor: "background.paper",
+  borderRadius: 4,
+  boxShadow: 24,
+  p: 2,
+};
 export default function Setting() {
-  const { ChangeCurrency,lbpValue } = useContext(AuthContext);
+  const { ChangeCurrency, lbpValue } = useContext(AuthContext);
 
   const [name, setName] = useState<any>("");
+  const [userName, setUserName] = useState<any>("");
+  const [id, setId] = useState<any>("");
+  const [userPass, setUserPass] = useState<any>("");
   const [passUser, setPassUser] = useState<any>("");
   const [settingsType, setSettingsType] = useState<any>("");
   const [loading, setLoading] = useState<any>(false);
+  const [openEditUser, setOpenEditUser] = useState<any>(false);
   const [number, setNumber] = useState<any>("");
   const [rows, setRows] = useState<any>([]);
   const [imgsSrc, setImgsSrc] = useState<any>("");
   const [image, setImage] = useState<File | null>(null);
   const [progress, setProgress] = useState<any>(0);
-  const [currencyValue, setCurrencyValue] = useState<any>(lbpValue?lbpValue:0);
+  const [currencyValue, setCurrencyValue] = useState<any>(
+    lbpValue ? lbpValue : 0
+  );
   const [FReports, setFirebaseReports] = useState<any>([]);
 
   const axios = require("axios");
@@ -199,226 +219,336 @@ export default function Setting() {
         console.log(error);
       });
   };
-
+  const handleEdit = () => {
+    axios
+      .post("https://shop-server-iota.vercel.app/updateUser", {
+        email,
+        userName,
+        userPass,
+        id,
+      })
+      .then(function (response: any) {
+        if (response.data == "found") {
+          enqueueSnackbar("This user is already found", {
+            variant: "error",
+          });
+        } else {
+          enqueueSnackbar("User had updated successfully", {
+            variant: "success",
+          });
+          setOpenEditUser(false);
+          getUsers();
+        }
+      })
+      .catch(function (error: any) {
+        console.log(error);
+      });
+  };
   return (
-    <Grid container spacing={2} sx={{ p: 2 }}>
-      <Grid item xs={5}>
-        {" "}
-        <Card
-          sx={{ p: 1, cursor: "pointer",mb:2 }}
-          onClick={() => {
-            setSettingsType("currency");
-          }}
-        >
-          Currency Settings{" "}
-        </Card>
-        <Card
-          sx={{ p: 1, cursor: "pointer" }}
-          onClick={() => {
-            setSettingsType("AdminSettings");
-          }}
-        >
-          Admin Settings
-        </Card>
-        <Card
-          sx={{ p: 1, mt: 2, cursor: "pointer" }}
-          onClick={() => {
-            setSettingsType("AddUser");
-          }}
-        >
-          Add User
-        </Card>
-        <Card
-          sx={{ p: 1, mt: 2, cursor: "pointer" }}
-          onClick={() => {
-            setSettingsType("Users");
-          }}
-        >
-          Users
-        </Card>
-      </Grid>
-      <Grid item xs={7}>
-        {settingsType == "AddUser" ? (
-          <Card sx={{ display: "flex", flexDirection: "column", gap: 2, p: 1 }}>
-            <Typography> Add User</Typography>
-            <TextField
-              label=" Name"
-              variant="outlined"
-              fullWidth
-              size="small"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-            />
-            <TextField
-              label="Password"
-              variant="outlined"
-              fullWidth
-              size="small"
-              value={passUser}
-              onChange={(e) => {
-                setPassUser(e.target.value);
-              }}
-            />
-            <TextField
-              label="Phone number "
-              variant="outlined"
-              fullWidth
-              size="small"
-              value={number}
-              onChange={(e) => {
-                setNumber(e.target.value);
-              }}
-            />
-            <Stack direction="row">
-              <Button
-                variant="contained"
-                onClick={handleAdd}
-                disabled={loading}
-              >
-                Add User
-              </Button>
-            </Stack>
-          </Card>
-        ) : settingsType == "currency" ? (
-          <Card sx={{ display: "flex", flexDirection: "column", gap: 2, p: 1 }}>
-            <Typography> Set Currency</Typography>
-            <TextField
-              label="Currency"
-              variant="outlined"
-              fullWidth
-              size="small"
-              value={currencyValue}
-              onChange={(e) => {
-                setCurrencyValue(e.target.value);
-              }}
-            />
+    <>
+      <Modal
+        open={openEditUser}
+        onClose={() => {
+          setOpenEditUser(false);
+        }}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography variant="h5">Update User</Typography>
+              <Divider sx={{ mt: 2 }} />
+            </Grid>
 
-            <Stack direction="row">
-              <Button
-                variant="contained"
-                onClick={() => {
-                  ChangeCurrency(currencyValue);
+            <Grid item xs={6}>
+              <TextField
+                label="Name"
+                variant="outlined"
+                fullWidth
+                value={userName}
+                onChange={(e) => {
+                  setUserName(e.target.value);
                 }}
-                disabled={loading}
-              >
-                Add Currency
-              </Button>
-            </Stack>
-          </Card>
-        ) : settingsType == "Users" ? (
-          <Card
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            p: 0.1,
-            boxShadow: "0px 0px 0px 0px !important",
-          }}
-        >
-          <TableContainer component={Paper}>
-            <Table aria-label="simple table">
-              <TableHead sx={{ backgroundColor: "divider" }}>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Number</TableCell>{" "}
-                  <TableCell>selling(Today)</TableCell>
-                  <TableCell>selling</TableCell>
-                  <TableCell>Password</TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row: any) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell>{row.number}</TableCell>
-                    <TableCell>{returnTotal(row.name, true)}</TableCell>
-                    <TableCell>{returnTotal(row.name, false)}</TableCell>
-                    <TableCell>{row.pass}</TableCell>
-                    <TableCell>
-                      <Button variant="contained">Edit</Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Card>
-        ) : (
-          <Card sx={{ display: "flex", flexDirection: "column", gap: 2, p: 1 }}>
-            <Stack direction="row" spacing={2}>
-              <Button
-                component="label"
-                variant="contained"
-                startIcon={<CloudUploadIcon />}
-                sx={{
-                  width: "170px",
-                  height: "170px",
-                  borderRadius: "50%",
-                  backgroundImage: `url(${
-                    progress == 100
-                      ? imgsSrc
-                      : progress > 0
-                      ? `https://th.bing.com/th/id/OIP.Z-T3CJd0LsDvCBSoWraSBwHaHa?w=183&h=184&c=7&r=0&o=5&pid=1.7`
-                      : ""
-                  })`,
-                  backgroundSize: "170px 170px",
-                  backgroundRepeat: "no-repeat",
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Pass"
+                variant="outlined"
+                fullWidth
+                value={userPass}
+                onChange={(e) => {
+                  setUserPass(e.target.value);
                 }}
-              >
-                Upload file
-                <VisuallyHiddenInput
-                  type="file"
-                  onChange={(event: any) => {
-                    handleImageChange(event);
-                  }}
-                />
-              </Button>{" "}
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                  width: "60%",
-                  pt: 4,
-                }}
-              >
-                <TextField
-                  label=" Name"
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  disabled
-                  value={user}
-                  // onChange={(e) => {
-                  //   setName(e.target.value);
-                  // }}
-                />
-                <TextField
-                  label="Password"
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  value={pass}
-                />
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Stack direction="row" spacing={1}>
                 <Button
                   variant="contained"
-                  sx={{ width: "100px" }}
+                  onClick={handleEdit}
+                  disabled={userName == "" || userPass == ""}
+                  sx={{
+                    backgroundColor: "#59a96a",
+                    ":hover": {
+                      backgroundColor: alpha("#59a96a", 0.7),
+                    },
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setOpenEditUser(false);
+                  }}
+                  sx={{ color: "#59a96a", borderColor: "#59a96a" }}
+                >
+                  Cancel
+                </Button>
+              </Stack>
+            </Grid>
+          </Grid>
+        </Box>
+      </Modal>
+      <Grid container spacing={2} sx={{ p: 2 }}>
+        <Grid item xs={5}>
+          {" "}
+          <Card
+            sx={{ p: 1, cursor: "pointer", mb: 2 }}
+            onClick={() => {
+              setSettingsType("currency");
+            }}
+          >
+            Currency Settings{" "}
+          </Card>
+          <Card
+            sx={{ p: 1, cursor: "pointer" }}
+            onClick={() => {
+              setSettingsType("AdminSettings");
+            }}
+          >
+            Admin Settings
+          </Card>
+          <Card
+            sx={{ p: 1, mt: 2, cursor: "pointer" }}
+            onClick={() => {
+              setSettingsType("AddUser");
+            }}
+          >
+            Add User
+          </Card>
+          <Card
+            sx={{ p: 1, mt: 2, cursor: "pointer" }}
+            onClick={() => {
+              setSettingsType("Users");
+            }}
+          >
+            Users
+          </Card>
+        </Grid>
+        <Grid item xs={7}>
+          {settingsType == "AddUser" ? (
+            <Card
+              sx={{ display: "flex", flexDirection: "column", gap: 2, p: 1 }}
+            >
+              <Typography> Add User</Typography>
+              <TextField
+                label=" Name"
+                variant="outlined"
+                fullWidth
+                size="small"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
+              <TextField
+                label="Password"
+                variant="outlined"
+                fullWidth
+                size="small"
+                value={passUser}
+                onChange={(e) => {
+                  setPassUser(e.target.value);
+                }}
+              />
+              <TextField
+                label="Phone number "
+                variant="outlined"
+                fullWidth
+                size="small"
+                value={number}
+                onChange={(e) => {
+                  setNumber(e.target.value);
+                }}
+              />
+              <Stack direction="row">
+                <Button
+                  variant="contained"
                   onClick={handleAdd}
                   disabled={loading}
                 >
-                  Save{" "}
+                  Add User
                 </Button>
-              </Box>
-            </Stack>
-          </Card>
-        )}
+              </Stack>
+            </Card>
+          ) : settingsType == "currency" ? (
+            <Card
+              sx={{ display: "flex", flexDirection: "column", gap: 2, p: 1 }}
+            >
+              <Typography> Set Currency</Typography>
+              <TextField
+                label="Currency"
+                variant="outlined"
+                fullWidth
+                size="small"
+                value={currencyValue}
+                onChange={(e) => {
+                  setCurrencyValue(e.target.value);
+                }}
+              />
+
+              <Stack direction="row">
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    ChangeCurrency(currencyValue);
+                  }}
+                  disabled={loading}
+                >
+                  Add Currency
+                </Button>
+              </Stack>
+            </Card>
+          ) : settingsType == "Users" ? (
+            <Card
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                p: 0.1,
+                boxShadow: "0px 0px 0px 0px !important",
+              }}
+            >
+              <TableContainer component={Paper}>
+                <Table aria-label="simple table">
+                  <TableHead sx={{ backgroundColor: "divider" }}>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Number</TableCell>{" "}
+                      <TableCell>selling(Today)</TableCell>
+                      <TableCell>selling</TableCell>
+                      <TableCell>Password</TableCell>
+                      <TableCell />
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows.map((row: any) => (
+                      <TableRow
+                        key={row.name}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{row.name}</TableCell>
+                        <TableCell>{row.number}</TableCell>
+                        <TableCell>{returnTotal(row.name, true)}</TableCell>
+                        <TableCell>{returnTotal(row.name, false)}</TableCell>
+                        <TableCell>{row.pass}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            onClick={() => {
+                              setOpenEditUser(true);
+                              setUserName(row.name);
+                              setId(row._id);
+                              setUserPass(row.pass);
+                            }}
+                          >
+                            Edit
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Card>
+          ) : (
+            <Card
+              sx={{ display: "flex", flexDirection: "column", gap: 2, p: 1 }}
+            >
+              <Stack direction="row" spacing={2}>
+                <Button
+                  component="label"
+                  variant="contained"
+                  startIcon={<CloudUploadIcon />}
+                  sx={{
+                    width: "170px",
+                    height: "170px",
+                    borderRadius: "50%",
+                    backgroundImage: `url(${
+                      progress == 100
+                        ? imgsSrc
+                        : progress > 0
+                        ? `https://th.bing.com/th/id/OIP.Z-T3CJd0LsDvCBSoWraSBwHaHa?w=183&h=184&c=7&r=0&o=5&pid=1.7`
+                        : ""
+                    })`,
+                    backgroundSize: "170px 170px",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                >
+                  Upload file
+                  <VisuallyHiddenInput
+                    type="file"
+                    onChange={(event: any) => {
+                      handleImageChange(event);
+                    }}
+                  />
+                </Button>{" "}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    width: "60%",
+                    pt: 4,
+                  }}
+                >
+                  <TextField
+                    label=" Name"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    disabled
+                    value={user}
+                    // onChange={(e) => {
+                    //   setName(e.target.value);
+                    // }}
+                  />
+                  <TextField
+                    label="Password"
+                    variant="outlined"
+                    fullWidth
+                    size="small"
+                    value={pass}
+                  />
+                  <Button
+                    variant="contained"
+                    sx={{ width: "100px" }}
+                    onClick={handleAdd}
+                    disabled={loading}
+                  >
+                    Save{" "}
+                  </Button>
+                </Box>
+              </Stack>
+            </Card>
+          )}
+        </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 }

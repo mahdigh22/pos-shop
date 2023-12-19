@@ -1,5 +1,3 @@
-
-
 import {
   alpha,
   Button,
@@ -29,7 +27,7 @@ export default function NewCustomerForm(props: any) {
   const [id, setId] = useState<any>(edit ? rowData._id : uuidv4());
   const axios = require("axios");
   console.log("rowData", rowData);
- 
+
   const handleAdd = () => {
     edit
       ? axios
@@ -72,7 +70,7 @@ export default function NewCustomerForm(props: any) {
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Typography variant="h5">New Product</Typography>
+          <Typography variant="h5">New Customer</Typography>
           <Divider sx={{ mt: 2 }} textAlign="right">
             <Typography
               variant="subtitle1"
@@ -152,7 +150,9 @@ export default function NewCustomerForm(props: any) {
             <Button
               variant="contained"
               onClick={handleAdd}
-              //   disabled={Error && !isEdit}
+              disabled={
+                name == "" || number == "" || country == "" || status == ""
+              }
               sx={{
                 backgroundColor: "#59a96a",
                 ":hover": {

@@ -450,7 +450,18 @@ export default function NewProductForm(props: any) {
             <Button
               variant="contained"
               onClick={isEdit ? handleEdit : handleAdd}
-              disabled={Error && !isEdit}
+              disabled={
+                (Error && !isEdit) ||
+                Code == "" ||
+                Name == "" ||
+                Price == null ||
+                SellPrice1 == null ||
+                SellPrice2 == null ||
+                Quantity == null ||
+                Supplier == "" ||
+                Category == "" ||
+                imgsSrc == ""
+              }
               sx={{
                 backgroundColor: "#59a96a",
                 ":hover": {
