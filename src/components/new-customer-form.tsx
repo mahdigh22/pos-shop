@@ -16,8 +16,7 @@ import React, { useContext } from "react";
 import AuthContext from "@/hooks/authContext";
 import { v4 as uuidv4 } from "uuid";
 export default function NewCustomerForm(props: any) {
-  const { email, token } = useContext(AuthContext);
-
+  const { email, token, type } = useContext(AuthContext);
   const { getCustomers, handleClose, edit, rowData } = props;
   const [name, setName] = useState<any>(edit ? rowData.name : "");
   const [number, setNumber] = useState<any>(edit ? rowData.number : 0);
@@ -136,6 +135,7 @@ export default function NewCustomerForm(props: any) {
               id="demo-simple-select"
               value={status}
               label="Stauts"
+              disabled={type != "admin"}
               onChange={(e) => {
                 setStatus(e.target.value);
               }}

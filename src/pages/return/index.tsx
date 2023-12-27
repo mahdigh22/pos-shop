@@ -59,7 +59,6 @@ function Row(props: any) {
       (item: any) =>
         (total += item.sellpricea ? item.sellpricea : item.sellpriceb)
     );
-    console.log("total", total);
     const list = list2[index];
     try {
       if (list2.length > 0) {
