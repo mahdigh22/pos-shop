@@ -46,6 +46,45 @@ function Row(props: any) {
   const [open, setOpen] = React.useState(false);
   const [loadingReturn, setLoadingReturn] = React.useState(false);
 
+  async function UpdateOneItem(id: any, Data: any, index: any, code: any) {
+    setLoadingReturn(true);
+
+    const list2 = Data?.map((item: any) => ({
+      code: item.code,
+      quantity: +item.unit,
+    }));
+    const list1 = Data?.filter((item: any) => item.code != code);
+    let total = 0;
+    const totalmap = list1?.map(
+      (item: any) =>
+        (total += item.sellpricea ? item.sellpricea : item.sellpriceb)
+    );
+    console.log("total", total);
+    const list = list2[index];
+    try {
+      if (list2.length > 0) {
+        const resp = await axios.post(
+          "https://shop-server-iota.vercel.app/updateReturnProduct",
+          {
+            list,
+            email,
+          }
+        );
+
+        handleDeleteOneExpense(id, list1, total);
+        setLoadingReturn(false);
+
+        enqueueSnackbar("Bill has been returned", {
+          variant: "success",
+        });
+      }
+    } catch (error) {
+      enqueueSnackbar("Error contacting server", {
+        variant: "error",
+      });
+      setLoadingReturn(false);
+    }
+  }
   async function UpdateItem(id: any, Data: any) {
     setLoadingReturn(true);
 
@@ -88,6 +127,20 @@ function Row(props: any) {
     console.log(listRef);
     const newItem = { return: "true" };
     set(specificItemRef, newItem);
+
+    // remove(ref(db, id));
+    setLoading(false);
+  };
+  const handleDeleteOneExpense = (id: any, Data: any, total: any) => {
+    const db = getDatabase(firebaseconf);
+    setLoading(true);
+    const listRef = ref(db, `${id}`);
+    const specificItemRef = child(listRef, "list");
+    const specificItemRef2 = child(listRef, "total");
+
+    const newItem = Data;
+    set(specificItemRef, newItem);
+    set(specificItemRef2, total);
 
     // remove(ref(db, id));
     setLoading(false);
@@ -135,6 +188,7 @@ function Row(props: any) {
                     <TableCell align="right">amount</TableCell>
                     <TableCell align="right">price</TableCell>
                     <TableCell align="right">total</TableCell>
+                    <TableCell />
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -155,6 +209,21 @@ function Row(props: any) {
                           ? data.sellpriceb
                           : data.sellpricea) * data.unit}
                         {data.currency}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => {
+                            UpdateOneItem(
+                              row?.id,
+                              row?.list,
+                              index,
+                              data?.code
+                            );
+                          }}
+                          disabled={row?.list?.length == 1 || loadingReturn}
+                        >
+                          return
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -182,14 +251,6 @@ export default function Return() {
     getReportsformfirebase();
     // getReportsformDatabase();
   }, [loading]);
-
-  async function getReportsformDatabase() {
-    await axios
-      .get("https://shop-server-iota.vercel.app/reports")
-      .then((resp: any) => {
-        setDatabaseReports(resp.data);
-      });
-  }
 
   async function getReportsformfirebase() {
     const db = getDatabase(firebaseconf);
@@ -274,6 +335,7 @@ export default function Return() {
                       <Row
                         key={index}
                         row={row}
+                        index={index}
                         setLoading={setLoading}
                         setOpenSnackbar={setOpenSnackbar}
                       />
