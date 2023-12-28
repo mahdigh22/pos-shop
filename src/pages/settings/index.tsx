@@ -109,7 +109,14 @@ export default function Setting() {
             return FReports[item];
           })
           ?.filter((item: any) => item.user == user)
-          ?.map((item: any) => (total = total + item.total))
+          ?.map(
+            (item: any) =>
+              (total =
+                total +
+                (item?.currency == "lbp"
+                  ? item?.total / item?.lbpValue
+                  : item?.total))
+          )
       : [];
     const today = moment().startOf("day");
     const data2 = FReports
@@ -123,9 +130,16 @@ export default function Setting() {
             return moment(parsedDate).isSame(today, "day");
           })
           ?.filter((item: any) => item.user == user)
-          ?.map((item: any) => (total2 = total2 + item.total))
+          ?.map(
+            (item: any) =>
+              (total2 =
+                total2 +
+                (item?.currency == "lbp"
+                  ? item?.total / item?.lbpValue
+                  : item?.total))
+          )
       : [];
-    console.log("dataa", data2);
+    // console.log("dataa", FReports);
 
     return day ? total2 : total;
   };

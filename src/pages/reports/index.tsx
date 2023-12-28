@@ -33,6 +33,7 @@ function Row(props: any) {
         </TableCell>
         <TableCell>{row?.id}</TableCell>
         <TableCell>{row?.CustomerName}</TableCell>
+        <TableCell>{row?.user}</TableCell>
         <TableCell>{row?.total}</TableCell>
         <TableCell>{row?.currency}</TableCell>
         {row?.currency == "lbp" ? (
@@ -146,6 +147,7 @@ export default function FReports() {
                 <TableCell />
                 <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Customer Name</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Total</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Currency</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>CurrencyValue</TableCell>
