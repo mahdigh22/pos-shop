@@ -290,7 +290,7 @@ export default function NewProductForm(props: any) {
               }}
             >
               <MenuItem value={"usd"}>Dollar</MenuItem>
-              <MenuItem value={"lbp"}>L.L</MenuItem>
+              {/* <MenuItem value={"lbp"}>L.L</MenuItem> */}
             </Select>
           </FormControl>
         </Grid>
